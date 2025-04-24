@@ -1,33 +1,26 @@
-<%@ include file="/WEB-INF/views/common/_taglibs.jsp" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>커뮤니티 게시판</title>
+    <title>비밀번호 찾기</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
-<!-- 홈페이지 (최상위 인덱스) -->
+<!-- 비밀번호 찾기 화면 -->
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
-        <a class="navbar-brand" href="index.html">커뮤니티 게시판</a> <!-- 브랜드명 변경 및 링크 수정 -->
+        <a class="navbar-brand" href="list.html">게시판</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" href="index.html">홈</a> <!-- 홈 링크 추가 및 활성화 -->
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="list.html">게시판</a> <!-- 게시판 링크 추가 -->
-                </li>
+            <ul class="navbar-nav ms-auto"> <!-- ms-auto added -->
                 <!-- Logged-out state -->
                 <li class="nav-item">
                     <a class="nav-link" href="login.html">로그인</a>
@@ -50,28 +43,35 @@
 </nav>
 
 <div class="container mt-5">
-    <div class="p-5 mb-4 bg-light rounded-3">
-        <div class="container-fluid py-5">
-            <h1 class="display-5 fw-bold">커뮤니티 게시판에 오신 것을 환영합니다!</h1>
-            <p class="col-md-8 fs-4">자유롭게 의견을 나누고 정보를 공유하는 공간입니다.</p>
-            <a href="list.html" class="btn btn-primary btn-lg" type="button">게시판 바로가기</a>
-        </div>
-    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="text-center mb-0">비밀번호 찾기</h1>
+                </div>
+                <div class="card-body">
+                    <!-- Alert Placeholder -->
+                    <div id="alertPlaceholder" class="mb-3"></div>
 
-    <div class="row align-items-md-stretch">
-        <div class="col-md-12">
-            <div class="h-100 p-5 bg-white border rounded-3 text-center">
-                <h2>다양한 이야기들</h2>
-                <p>여러분의 이야기를 들려주세요.</p>
-                <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1740&auto=format&fit=crop" class="img-fluid rounded shadow-sm mt-3" alt="Community Discussion">
-            </div>
-        </div>
-    </div>
-
-    <footer class="pt-3 mt-4 text-muted border-top">
-        &copy; 2024 커뮤니티 게시판
-    </footer>
-</div>
+                    <p class="text-center text-muted mb-4">가입 시 사용한 이메일 주소를 입력하시면, 비밀번호 재설정 안내 메일을 보내드립니다.</p>
+                    <!-- 실제 비밀번호 찾기 처리를 위해서는 method="POST" action="[서버 URL]" 필요 -->
+                    <form>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">이메일 주소</label>
+                            <input type="email" class="form-control" id="email" placeholder="이메일 입력" required>
+                        </div>
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-warning">재설정 메일 보내기</button>
+                        </div>
+                        <div class="text-center">
+                            <small><a href="login.html">로그인 페이지로 돌아가기</a></small>
+                        </div>
+                    </form>
+                </div> <!-- End card-body -->
+            </div> <!-- End card -->
+        </div> <!-- End col-md-6 -->
+    </div> <!-- End row -->
+</div> <!-- End container -->
 
 <!-- Bootstrap JS Bundle (includes Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
