@@ -1,0 +1,10 @@
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+  datasource:
+    url: jdbc:mariadb://localhost:9999/mydatabase
+    username: myuser
+    password: mypassword
+    driver-class-name: org.mariadb.jdbc.Driver
