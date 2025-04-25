@@ -53,18 +53,18 @@
         </div>
         <div class="card-body">
             <!-- 실제 폼 전송을 위해서는 method="POST" action="[서버 URL]" 등이 필요합니다. -->
-            <form enctype="multipart/form-data">
+            <form method="POST" action="/board/write" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="postTitle" class="form-label">제목</label>
-                    <input type="text" class="form-control" id="postTitle" placeholder="제목을 입력하세요" required>
+                    <input type="text" class="form-control" id="postTitle" name="title" placeholder="제목을 입력하세요" required>
                 </div>
                 <div class="mb-3">
                     <label for="postCategory" class="form-label">카테고리</label>
-                    <select class="form-select" id="postCategory" required>
+                    <select class="form-select" id="postCategory" name="category" required>
                         <option selected disabled value="">카테고리를 선택하세요</option>
                         <option value="notice">공지</option>
                         <option value="free">자유</option>
-                        <option value="qna">질문/답변</option>
+                        <option value="qna">질문답변</option>
                         <!-- 다른 카테고리 옵션 추가 가능 -->
                     </select>
                 </div>
@@ -74,7 +74,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="postFiles" class="form-label">파일 첨부</label>
-                    <input class="form-control" type="file" id="postFiles" multiple>
+                    <input class="form-control" type="file" id="postFiles" name="files" multiple>
                 </div>
 
                 <div class="d-flex justify-content-end">
