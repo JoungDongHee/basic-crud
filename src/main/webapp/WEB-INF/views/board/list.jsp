@@ -66,33 +66,14 @@
         </thead>
         <tbody>
         <!-- 게시글 데이터가 동적으로 추가될 부분 -->
-        <c:set var="boardList" value="<%=new java.util.ArrayList<java.util.Map<String, Object>>() {
-            {
-                add(new java.util.HashMap<String, Object>() {{
-                    put(\"id\", 1);
-                    put(\"category\", \"공지\");
-                    put(\"title\", \"첫 번째 게시글입니다.\");
-                    put(\"author\", \"홍길동\");
-                    put(\"date\", \"2024-07-26\");
-                }});
-                add(new java.util.HashMap<String, Object>() {{
-                    put(\"id\", 2);
-                    put(\"category\", \"자유\");
-                    put(\"title\", \"두 번째 게시글 제목\");
-                    put(\"author\", \"김철수\");
-                    put(\"date\", \"2024-07-25\");
-                }});
-                add(new java.util.HashMap<String, Object>() {{
-                    put(\"id\", 3);
-                    put(\"category\", \"질문\");
-                    put(\"title\", \"세 번째 게시글 질문입니다.\");
-                    put(\"author\", \"이영희\");
-                    put(\"date\", \"2024-07-24\");
-                }});
-            }
-        }%>"/>
         <c:forEach var="board" items="${boardList}">
-            <tr><th scope="row">${board.id}</th><td>${board.category}</td><td><a href="view.html?id=${board.id}">${board.title}</a></td><td>${board.author}</td><td>${board.date}</td></tr>
+            <tr>
+                <th scope="row">${board.postId}</th>
+                <td>${board.category}</td>
+                <td><a href="view?page=${board.postId}">${board.title}</a></td>
+                <td>${board.userName}</td>
+                <td>${board.createdDate}</td>
+            </tr>
         </c:forEach>
         <!-- 예시 데이터 -->
         </tbody>
