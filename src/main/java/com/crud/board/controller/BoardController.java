@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,13 +35,21 @@ public class BoardController {
 
     @GetMapping("/write")
     public String write() {
+
         return "board/write";
     }
 
     @PostMapping("/write")
-    public String write(@Validated BoardWriteRqDTO boardWriteRqDTO) {
+    public String write(@Validated BoardWriteRqDTO boardWriteRqDTO , BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            log.info("bindingResult : {}", bindingResult.getAllErrors());
+            model.addAttribute("boardWriteRqDTO", boardWriteRqDTO); // DTO 값 복원
+            return "board/write";
+        }
+
+        // 성공 로직 (예: DB 저장 등) 입력
         int board = boardService.createBoard(boardWriteRqDTO);
-        return "board/write";
+        return "redirect:/board/list";
     }
 
     @GetMapping("/edit")

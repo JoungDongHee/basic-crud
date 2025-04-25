@@ -1,3 +1,4 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ include file="/WEB-INF/views/common/_taglibs.jsp" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
@@ -29,15 +30,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="register.html">회원가입</a>
                 </li>
-                <!-- Logged-in state (Example) -->
-                <!--
-                <li class="nav-item">
-                    <span class="navbar-text me-2">[사용자 이름]님 환영합니다!</span>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">로그아웃</a>
-                </li>
-                -->
             </ul>
         </div>
     </div>
@@ -52,31 +44,49 @@
             <h1 class="mb-0">새 글 작성</h1>
         </div>
         <div class="card-body">
-            <!-- 실제 폼 전송을 위해서는 method="POST" action="[서버 URL]" 등이 필요합니다. -->
             <form method="POST" action="/board/write" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="postTitle" class="form-label">제목</label>
-                    <input type="text" class="form-control" id="postTitle" name="title" placeholder="제목을 입력하세요" required>
+                    <input type="text" class="form-control" id="postTitle" name="title" value="${boardWriteRqDTO.title}" placeholder="제목을 입력하세요">
+                    <spring:hasBindErrors name="boardWriteRqDTO">
+                        <div class="text-danger">
+                            <c:if test="${errors.hasFieldErrors('title')}">
+                                <c:out value="${errors.getFieldError('title').defaultMessage}" />
+                            </c:if>
+                        </div>
+                    </spring:hasBindErrors>
                 </div>
                 <div class="mb-3">
                     <label for="postCategory" class="form-label">카테고리</label>
-                    <select class="form-select" id="postCategory" name="category" required>
+                    <select class="form-select" id="postCategory" name="category" >
                         <option selected disabled value="">카테고리를 선택하세요</option>
-                        <option value="notice">공지</option>
-                        <option value="free">자유</option>
-                        <option value="qna">질문답변</option>
-                        <!-- 다른 카테고리 옵션 추가 가능 -->
+                        <option value="notice" <c:if test="${boardWriteRqDTO.category == 'notice'}">selected</c:if>>공지</option>
+                        <option value="free" <c:if test="${boardWriteRqDTO.category == 'free'}">selected</c:if>>자유</option>
+                        <option value="qna" <c:if test="${boardWriteRqDTO.category == 'qna'}">selected</c:if>>질문답변</option>
                     </select>
+                    <spring:hasBindErrors name="boardWriteRqDTO">
+                        <div class="text-danger">
+                            <c:if test="${errors.hasFieldErrors('category')}">
+                                <c:out value="${errors.getFieldError('category').defaultMessage}" />
+                            </c:if>
+                        </div>
+                    </spring:hasBindErrors>
                 </div>
                 <div class="mb-3">
                     <label for="postContent" class="form-label">내용</label>
-                    <textarea class="form-control" id="postContent" rows="10" placeholder="내용을 입력하세요" required></textarea>
+                    <textarea class="form-control" id="postContent" rows="10" placeholder="내용을 입력하세요" name="content">${boardWriteRqDTO.content}</textarea>
+                    <spring:hasBindErrors name="boardWriteRqDTO">
+                        <div class="text-danger">
+                            <c:if test="${errors.hasFieldErrors('content')}">
+                                <c:out value="${errors.getFieldError('content').defaultMessage}" />
+                            </c:if>
+                        </div>
+                    </spring:hasBindErrors>
                 </div>
                 <div class="mb-3">
                     <label for="postFiles" class="form-label">파일 첨부</label>
-                    <input class="form-control" type="file" id="postFiles" name="files" multiple>
+                    <input class="form-control" type="file" id="postFiles" name="file" multiple>
                 </div>
-
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary me-2">저장</button>
                     <a href="list.html" class="btn btn-secondary">취소</a>
