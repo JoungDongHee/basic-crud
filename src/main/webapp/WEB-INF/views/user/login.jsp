@@ -16,7 +16,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
-        <a class="navbar-brand" href="list.html">게시판</a>
+        <a class="navbar-brand" href="/board/list">게시판</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -24,10 +24,10 @@
             <ul class="navbar-nav ms-auto">
                 <!-- Logged-out state -->
                 <li class="nav-item">
-                    <a class="nav-link active" href="login.html">로그인</a>
+                    <a class="nav-link active" href="/user/login">로그인</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="register.html">회원가입</a>
+                    <a class="nav-link" href="/user/join">회원가입</a>
                 </li>
                 <!-- Logged-in state (Example) -->
                 <!--
@@ -52,23 +52,31 @@
                 </div>
                 <div class="card-body">
                     <!-- Alert Placeholder -->
-                    <div id="alertPlaceholder" class="mb-3"></div>
+                    <div id="alertPlaceholder" class="mb-3">
+                        <spring:hasBindErrors name="userRequestDTO">
+                            <div class="text-danger">
+                                <c:if test="${not empty errors}">
+                                    <c:out value="${errors.allErrors[0].defaultMessage}" />
+                                </c:if>
+                            </div>
+                        </spring:hasBindErrors>
+                    </div>
 
-                    <!-- 실제 로그인 처리를 위해서는 method="POST" action="[서버 URL]" 필요 -->
-                    <form>
+                    <!-- 로그인 처리를 위한 폼 -->
+                    <form action="/user/login" method="post">
                         <div class="mb-3">
-                            <label for="username" class="form-label">아이디</label>
-                            <input type="text" class="form-control" id="username" placeholder="아이디 입력" required>
+                            <label for="loginId" class="form-label">아이디</label>
+                            <input type="text" class="form-control" id="loginId" name="loginId" placeholder="아이디 입력" required>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">비밀번호</label>
-                            <input type="password" class="form-control" id="password" placeholder="비밀번호 입력" required>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호 입력" required>
                         </div>
                         <div class="d-grid gap-2 mb-3">
                             <button type="submit" class="btn btn-primary">로그인</button>
                         </div>
                         <div class="text-center">
-                            <small><a href="register.html">회원가입</a> | <a href="forgot-password.html">비밀번호 찾기</a></small>
+                            <small><a href="/user/join">회원가입</a> | <a href="/user/forgot-password">비밀번호 찾기</a></small>
                         </div>
                     </form>
                 </div>

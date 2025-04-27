@@ -1,11 +1,12 @@
-package com.crud.board.dto;
+package com.crud.board.entity;
 
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-@Getter
 @Setter
+@ToString
 public class Categories {
   private long categoryId;
   private String name;

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crud.user.mapper.UserMapper">
+
+    <select id="findById" parameterType="java.lang.String" resultType="com.crud.user.entity.Users">
+        SELECT *FROM Users
+        WHERE username = #{username}
+    </select>
+
+    <select id="login" parameterType="java.util.Map" resultType="com.crud.user.entity.Users">
+        SELECT *FROM Users
+         WHERE username = #{username} and password_hash = #{password}
+    </select>
+
+
+</mapper>
