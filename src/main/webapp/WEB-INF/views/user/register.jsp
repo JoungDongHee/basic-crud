@@ -113,18 +113,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkIdBtn = document.getElementById('checkIdBtn');
     const userIdFeedback = document.getElementById('userIdFeedback');
 
-    // 아이디 중복 확인 기능
-    checkIdBtn.addEventListener('click', function() {
-        const userIdValue = userId.value.trim();
-
-        if (!userIdValue) {
-            userIdFeedback.className = 'form-text text-danger mt-1';
-            userIdFeedback.textContent = '아이디를 입력해주세요.';
-            return;
-        }
-
-        // AJAX 요청으로 아이디 중복 확인
-        fetch(`/user/check-id?userId=${encodeURIComponent(userIdValue)}`)
+    function checkUserIdAvailability(userIdValue) {
+        const encodedUserId = encodeURIComponent(userIdValue);
+        return fetch(`/user/check-id?userId=${encodedUserId}`)
             .then(response => response.json())
             .then(isAvailable => {
                 if (isAvailable) {
@@ -142,6 +133,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 userIdFeedback.className = 'form-text text-danger mt-1';
                 userIdFeedback.textContent = '아이디 확인 중 오류가 발생했습니다.';
             });
+    }
+
+
+
+
+
+    // 아이디 중복 확인 기능
+    checkIdBtn.addEventListener('click', function() {
+        const userIdValue = userId.value.trim();
+
+        if (!userIdValue) {
+            userIdFeedback.className = 'form-text text-danger mt-1';
+            userIdFeedback.textContent = '아이디를 입력해주세요.';
+            return;
+        }
+
+        // AJAX 요청으로 아이디 중복 확인
+        checkUserIdAvailability(userIdValue);
     });
 
     // 아이디 입력 필드 변경 시 검증 상태 초기화
