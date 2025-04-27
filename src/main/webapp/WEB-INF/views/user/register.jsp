@@ -14,6 +14,96 @@
 <body>
 <!-- 회원가입 화면 -->
 
+<!-- Password validation script -->
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const alertPlaceholder = document.getElementById('alertPlaceholder');
+        const userId = document.getElementById('userId');
+        const checkIdBtn = document.getElementById('checkIdBtn');
+        const userIdFeedback = document.getElementById('userIdFeedback');
+
+        // 아이디 중복 확인 기능
+// 아이디 중복 확인 기능
+        checkIdBtn.addEventListener('click', function() {
+            const userIdValue = userId.value;
+
+            if (!userIdValue) {
+                userIdFeedback.className = 'form-text text-danger mt-1';
+                userIdFeedback.textContent = '아이디를 입력해주세요.';
+                return;
+            }
+
+            // AJAX 요청으로 아이디 중복 확인
+            // URL 인코딩 문제를 방지하기 위해 fetch 옵션을 사용
+            fetch('/user/check-id', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'userId=' + encodeURIComponent(userIdValue)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 서버에서 반환하는 JSON 객체에서 사용 가능 여부를 추출
+                    const isAvailable = data.available !== undefined ? data.available : data;
+
+                    if (isAvailable) {
+                        userIdFeedback.className = 'form-text text-success mt-1';
+                        userIdFeedback.textContent = '사용 가능한 아이디입니다.';
+                        userId.dataset.validated = 'true';
+                    } else {
+                        userIdFeedback.className = 'form-text text-danger mt-1';
+                        userIdFeedback.textContent = '이미 사용중인 아이디입니다.';
+                        userId.dataset.validated = 'false';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking user ID:', error);
+                    userIdFeedback.className = 'form-text text-danger mt-1';
+                    userIdFeedback.textContent = '아이디 확인 중 오류가 발생했습니다.';
+                });
+        });
+        // 아이디 입력 필드 변경 시 검증 상태 초기화
+        userId.addEventListener('input', function() {
+            userId.dataset.validated = '';
+            userIdFeedback.textContent = '';
+        });
+
+        form.addEventListener('submit', function(event) {
+            // Clear previous alerts
+            if (!alertPlaceholder.querySelector('.spring-generated')) {
+                alertPlaceholder.innerHTML = '';
+            }
+
+            // Check if passwords match
+            if (password.value !== confirmPassword.value) {
+                event.preventDefault();
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'text-danger';
+                alertDiv.textContent = '비밀번호가 일치하지 않습니다.';
+                alertPlaceholder.appendChild(alertDiv);
+            }
+
+            // 아이디 중복 확인 여부 검증
+            if (userId.dataset.validated === 'false') {
+                event.preventDefault();
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'text-danger';
+                alertDiv.textContent = '이미 사용중인 아이디입니다. 다른 아이디를 선택해주세요.';
+                alertPlaceholder.appendChild(alertDiv);
+            }
+        });
+    });
+</script>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="/board/list">게시판</a>
@@ -102,88 +192,6 @@
 <!-- Bootstrap JS Bundle (includes Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-<!-- Password validation script -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    const password = document.getElementById('password');
-    const confirmPassword = document.getElementById('confirmPassword');
-    const alertPlaceholder = document.getElementById('alertPlaceholder');
-    const userId = document.getElementById('userId');
-    const checkIdBtn = document.getElementById('checkIdBtn');
-    const userIdFeedback = document.getElementById('userIdFeedback');
 
-    function checkUserIdAvailability(userIdValue) {
-        const encodedUserId = encodeURIComponent(userIdValue);
-        return fetch(`/user/check-id?userId=${encodedUserId}`)
-            .then(response => response.json())
-            .then(isAvailable => {
-                if (isAvailable) {
-                    userIdFeedback.className = 'form-text text-success mt-1';
-                    userIdFeedback.textContent = '사용 가능한 아이디입니다.';
-                    userId.dataset.validated = 'true';
-                } else {
-                    userIdFeedback.className = 'form-text text-danger mt-1';
-                    userIdFeedback.textContent = '이미 사용중인 아이디입니다.';
-                    userId.dataset.validated = 'false';
-                }
-            })
-            .catch(error => {
-                console.error('Error checking user ID:', error);
-                userIdFeedback.className = 'form-text text-danger mt-1';
-                userIdFeedback.textContent = '아이디 확인 중 오류가 발생했습니다.';
-            });
-    }
-
-
-
-
-
-    // 아이디 중복 확인 기능
-    checkIdBtn.addEventListener('click', function() {
-        const userIdValue = userId.value.trim();
-
-        if (!userIdValue) {
-            userIdFeedback.className = 'form-text text-danger mt-1';
-            userIdFeedback.textContent = '아이디를 입력해주세요.';
-            return;
-        }
-
-        // AJAX 요청으로 아이디 중복 확인
-        checkUserIdAvailability(userIdValue);
-    });
-
-    // 아이디 입력 필드 변경 시 검증 상태 초기화
-    userId.addEventListener('input', function() {
-        userId.dataset.validated = '';
-        userIdFeedback.textContent = '';
-    });
-
-    form.addEventListener('submit', function(event) {
-        // Clear previous alerts
-        if (!alertPlaceholder.querySelector('.spring-generated')) {
-            alertPlaceholder.innerHTML = '';
-        }
-
-        // Check if passwords match
-        if (password.value !== confirmPassword.value) {
-            event.preventDefault();
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'text-danger';
-            alertDiv.textContent = '비밀번호가 일치하지 않습니다.';
-            alertPlaceholder.appendChild(alertDiv);
-        }
-
-        // 아이디 중복 확인 여부 검증
-        if (userId.dataset.validated === 'false') {
-            event.preventDefault();
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'text-danger';
-            alertDiv.textContent = '이미 사용중인 아이디입니다. 다른 아이디를 선택해주세요.';
-            alertPlaceholder.appendChild(alertDiv);
-        }
-    });
-});
-</script>
 </body>
 </html>

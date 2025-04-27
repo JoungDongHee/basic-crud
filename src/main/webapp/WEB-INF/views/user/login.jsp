@@ -27,7 +27,7 @@
                     <a class="nav-link active" href="/user/login">로그인</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/user/join">회원가입</a>
+                    <a class="nav-link" href="/user/register">회원가입</a>
                 </li>
                 <!-- Logged-in state (Example) -->
                 <!--
@@ -76,7 +76,7 @@
                             <button type="submit" class="btn btn-primary">로그인</button>
                         </div>
                         <div class="text-center">
-                            <small><a href="/user/join">회원가입</a> | <a href="/user/forgot-password">비밀번호 찾기</a></small>
+                            <small><a href="/user/">회원가입</a> | <a href="/user/forgot-password">비밀번호 찾기</a></small>
                         </div>
                     </form>
                 </div>

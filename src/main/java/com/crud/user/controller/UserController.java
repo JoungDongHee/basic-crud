@@ -91,7 +91,7 @@ public class UserController {
      * @param userId 확인할 사용자 ID
      * @return 사용자 ID의 사용 가능 여부 (true: 사용 가능, false: 이미 사용 중)
      */
-    @GetMapping("/check-id")
+    @PostMapping("/check-id")
     @ResponseBody
     public ResponseEntity<Boolean> checkUserIdAvailability(@RequestParam String userId) {
         log.info("Checking user ID availability: {}", userId);
