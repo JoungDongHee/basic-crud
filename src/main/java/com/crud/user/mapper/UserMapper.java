@@ -7,4 +7,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface UserMapper {
     Users findByUserId(String userId);
+    void insertUser(Users user);
 }

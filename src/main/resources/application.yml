@@ -11,3 +11,9 @@ spring:
 mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
   mapper-locations: classpath:mapper/**/*.xml
+server:
+  reactive:
+    session:
+      cookie:
+        name:
+          id:

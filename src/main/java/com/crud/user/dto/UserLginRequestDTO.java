@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserRequestDTO {
+public class UserLginRequestDTO {
     @NotBlank(message = "로그인 ID 는 공백일수 없습니다.")
     private String loginId;
 

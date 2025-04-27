@@ -12,4 +12,13 @@ public class Users {
   private String passwordHash;
   private java.sql.Timestamp createdAt;
   private java.sql.Timestamp updatedAt;
+
+  @Override
+  public String toString() {
+    return "Users{" +
+            "userId=" + userId +
+            ", username='" + username + '\'' +
+            ", email='" + email + '\'' +
+            '}';
+  }
 }

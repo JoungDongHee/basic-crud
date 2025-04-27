@@ -53,7 +53,7 @@
                 <div class="card-body">
                     <!-- Alert Placeholder -->
                     <div id="alertPlaceholder" class="mb-3">
-                        <spring:hasBindErrors name="userRequestDTO">
+                        <spring:hasBindErrors name="requestDTO">
                             <div class="text-danger">
                                 <c:if test="${not empty errors}">
                                     <c:out value="${errors.allErrors[0].defaultMessage}" />
