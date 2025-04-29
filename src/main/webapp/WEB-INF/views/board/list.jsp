@@ -51,7 +51,7 @@
     <h1 class="mb-4 text-center">게시판</h1>
 
     <div class="d-flex justify-content-end mb-3">
-        <a href="create.html" class="btn btn-primary">새 글 작성</a>
+        <a href="write" class="btn btn-primary">새 글 작성</a>
     </div>
 
     <table class="table table-striped table-hover table-bordered">
@@ -70,7 +70,7 @@
             <tr>
                 <th scope="row">${board.postId}</th>
                 <td>${board.category}</td>
-                <td><a href="view?page=${board.postId}">${board.title}</a></td>
+                <td><a href="view/${board.postId}">${board.title}</a></td>
                 <td>${board.userName}</td>
                 <td>${board.createdDate}</td>
             </tr>

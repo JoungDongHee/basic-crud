@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BoardListResponseDTO {
+public class BoardListResDTO {
     public int totalCount;
     public int postId;
     private String category;

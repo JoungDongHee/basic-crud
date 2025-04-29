@@ -1,14 +1,12 @@
 package com.crud.board.entity;
 
 
+import lombok.*;
 
-import lombok.Builder;
-import lombok.Setter;
-import lombok.ToString;
-
-@Setter
-@ToString
 @Builder
+@ToString
+@Setter
+@Getter
 public class Posts {
   private long postId;
   private long categoryId;

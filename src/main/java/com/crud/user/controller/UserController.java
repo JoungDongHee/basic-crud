@@ -63,7 +63,7 @@ public class UserController {
         // 로그인 성공 시 세션 관리
         HttpSession session = request.getSession();
         // 기존 세션 정보 삭제 (로그인 상태 갱신)
-        session.setAttribute("loggedInUser", login);
+        session.setAttribute(SessionConstants.SESSION_USER_KEY, login);
         log.info("User logged in successfully: {}", login.getUsername());
 
         // 로그인 후 리다이렉트

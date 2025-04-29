@@ -5,8 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 서버에서 받아온 게시글 제목으로 동적 설정 필요 -->
-    <title>게시글 상세 보기</title>
+    <!-- 서버에서 받아온 게시글 제목으로 동적 설정 -->
+    <title>${view.title} - 게시글 상세 보기</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Bootstrap Icons -->
@@ -17,7 +17,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
-        <a class="navbar-brand" href="list.html">게시판</a>
+        <a class="navbar-brand" href="/board/list">게시판</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -25,10 +25,10 @@
             <ul class="navbar-nav ms-auto"> <!-- ms-auto added -->
                 <!-- Logged-out state -->
                 <li class="nav-item">
-                    <a class="nav-link" href="login.html">로그인</a>
+                    <a class="nav-link" href="/user/login">로그인</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="register.html">회원가입</a>
+                    <a class="nav-link" href="/user/register">회원가입</a>
                 </li>
                 <!-- Logged-in state (Example) -->
                 <!--
@@ -51,45 +51,47 @@
     <div class="card">
         <div class="card-body">
             <!-- 서버에서 받아온 게시글 제목 -->
-            <h1 class="card-title mb-3">첫 번째 게시글입니다.</h1>
+            <h1 class="card-title mb-3">${view.title}</h1>
 
             <div class="card-subtitle text-muted mb-4 border-bottom pb-2">
                 <span>
-                    <strong>카테고리:</strong> 공지 |
-                    <strong>작성자:</strong> 홍길동
+                    <strong>카테고리:</strong> ${view.category} |
+                    <strong>작성자:</strong> ${view.author}
                 </span>
-                <span class="float-end"><strong>작성일:</strong> 2024-07-26</span>
+                <span class="float-end"><strong>작성일:</strong> ${view.createdDate}</span>
             </div>
 
             <!-- 서버에서 받아온 게시글 내용 -->
             <div class="card-text mb-4" style="min-height: 150px;">
-                <p>여기에 게시글의 본문 내용이 표시됩니다.</p>
-                <p>여러 줄의 텍스트가 들어갈 수 있습니다.</p>
+                ${view.content}
                 <!-- HTML 태그 렌더링이 필요하다면 서버에서 처리 후 출력 -->
             </div>
 
             <!-- 첨부 파일 섹션 (파일이 있을 경우) -->
+            <!-- 현재 파일 첨부 기능이 구현되어 있지 않아 주석 처리 -->
+
             <div class="mb-4 border-top pt-3">
                 <h5><i class="bi bi-paperclip"></i> 첨부 파일</h5>
                 <ul class="list-group list-group-flush">
-                    <!-- 서버에서 받아온 첨부파일 목록 반복 출력 -->
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <a href="#" download><i class="bi bi-file-earmark-text me-2"></i>existing_file_1.pdf</a>
-                        <!-- <span class="badge bg-light text-dark rounded-pill">1.2 MB</span> -->
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <a href="#" download><i class="bi bi-file-earmark-image me-2"></i>image.jpg</a>
-                        <!-- <span class="badge bg-light text-dark rounded-pill">850 KB</span> -->
-                    </li>
+                    <c:if test="${not empty fileList}">
+                        <c:forEach var="file" items="${fileList}">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="#" download><i class="bi bi-file-earmark me-2"></i>${file.fileName}</a>
+                            </li>
+                        </c:forEach>
+                    </c:if>
+                    <c:if test="${empty fileList}">
+                        <li class="list-group-item">첨부 파일이 없습니다.</li>
+                    </c:if>
                 </ul>
             </div>
 
             <div class="d-flex justify-content-end pt-3 border-top">
                 <!-- 로그인 상태 및 작성자 확인 후 수정/삭제 버튼 표시 (서버 로직 필요) -->
-                <a href="edit.html?id=1" class="btn btn-outline-secondary me-2">수정</a>
+                <a href="/board/edit?id=${param.viewnumber}" class="btn btn-outline-secondary me-2">수정</a>
                 <!-- 삭제 버튼은 id를 동적으로 전달해야 함 -->
-                <button type="button" class="btn btn-outline-danger me-2" onclick="deletePost(1)">삭제</button>
-                <a href="list.html" class="btn btn-primary">목록</a>
+                <button type="button" class="btn btn-outline-danger me-2" onclick="deletePost(${param.viewnumber})">삭제</button>
+                <a href="/board/list" class="btn btn-primary">목록</a>
             </div>
         </div> <!-- End card-body -->
     </div> <!-- End card -->
@@ -107,7 +109,7 @@
             console.log('Deleting post with id:', id);
             // 성공 시 목록 페이지로 리디렉션
             alert('삭제되었습니다.');
-            window.location.href = 'list.html'; // 목록 페이지로 이동
+            window.location.href = '/board/list'; // 목록 페이지로 이동
         }
     }
 </script>

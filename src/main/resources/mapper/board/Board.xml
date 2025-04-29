@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.crud.board.mapper.BoardMapper">
-    <select id="boardList" resultType="com.crud.board.dto.BoardListResponseDTO">
+    <select id="boardList" resultType="com.crud.board.dto.BoardListResDTO">
         SELECT A.post_id ,
                B.`name` as category,
                A.title ,
@@ -13,5 +13,26 @@
         FROM Posts AS A
                  INNER JOIN Categories AS B ON A.category_id = B.category_id
                  INNER JOIN Users AS C ON A.user_id = C.user_id;
+    </select>
+
+    <insert id="createBoard" parameterType="com.crud.board.entity.Posts" useGeneratedKeys="true" keyProperty="userId">
+        insert into Posts(category_id, user_id, title, content, created_at, updated_at)
+        VALUES (#{categoryId},#{userId},#{title},#{content},now(),now());
+    </insert>
+
+    <select id="getCategoryList" resultType="com.crud.board.entity.Categories">
+        SELECT *FROM Categories
+    </select>
+
+    <select id="getView" parameterType="java.lang.Integer" resultType="com.crud.board.dto.BoardViewResDTO">
+        SELECT A.title ,
+               A.content ,
+               B.`name` as category ,
+               C.username as author ,
+               A.created_at as createdDate
+        FROM Posts AS A
+            INNER JOIN Categories AS B ON A.category_id = B.category_id
+            INNER JOIN Users AS C ON A.user_id = C.user_id
+        WHERE A.post_id = #{viewnumber}
     </select>
 </mapper>

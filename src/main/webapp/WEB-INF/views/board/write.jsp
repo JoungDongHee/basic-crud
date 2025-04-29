@@ -59,9 +59,9 @@
                     <label for="postCategory" class="form-label">카테고리</label>
                     <select class="form-select" id="postCategory" name="category" >
                         <option selected disabled value="">카테고리를 선택하세요</option>
-                        <option value="notice" <c:if test="${boardWriteRqDTO.category == 'notice'}">selected</c:if>>공지</option>
-                        <option value="free" <c:if test="${boardWriteRqDTO.category == 'free'}">selected</c:if>>자유</option>
-                        <option value="qna" <c:if test="${boardWriteRqDTO.category == 'qna'}">selected</c:if>>질문답변</option>
+                        <c:forEach items="${category}" var="cat">
+                            <option value="${cat.categoryId}" <c:if test="${boardWriteRqDTO.category == cat.categoryId.toString()}">selected</c:if>>${cat.name}</option>
+                        </c:forEach>
                     </select>
                     <spring:hasBindErrors name="boardWriteRqDTO">
                         <div class="text-danger">

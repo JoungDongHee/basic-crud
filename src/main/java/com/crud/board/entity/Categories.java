@@ -1,15 +1,13 @@
 package com.crud.board.entity;
 
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-@Setter
-@ToString
+import lombok.Builder;
+import lombok.Data;
+@Data
+@Builder
 public class Categories {
   private long categoryId;
   private String name;
-  private String createdAt;
-  private String updatedAt;
+  private java.sql.Timestamp createdAt;
+  private java.sql.Timestamp updatedAt;
 }

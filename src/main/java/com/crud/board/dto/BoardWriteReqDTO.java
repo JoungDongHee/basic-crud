@@ -4,12 +4,11 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-public class BoardWriteRqDTO {
+public class BoardWriteReqDTO {
     @NotNull
     @NotEmpty(message = "제목은 필수 값 입니다.")
     private String title;
