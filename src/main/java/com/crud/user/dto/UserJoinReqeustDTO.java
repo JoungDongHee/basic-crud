@@ -13,6 +13,6 @@ public class UserJoinReqeustDTO {
     private String userId;
     @Email(message = "이메일 형식이 틀립니다.")
     private String email;
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#\\$%\\^&\\*])(?=\\S+$).{8,}$", message = "비밀번호는 최소 8자 이상, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*])\\S{8,}$", message = "비밀번호는 최소 8자 이상이어야 하며, 대문자, 소문자, 숫자, 특수문자를 모두 포함해야 합니다. 공백은 허용되지 않습니다.")
     private String password;
 }

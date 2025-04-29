@@ -1,4 +1,6 @@
+<%@ include file="/WEB-INF/views/common/header.jsp" %>
 <%@ include file="/WEB-INF/views/common/_taglibs.jsp" %>
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -13,36 +15,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
+
 <!-- 게시글 상세 보기 화면 -->
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/board/list">게시판</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto"> <!-- ms-auto added -->
-                <!-- Logged-out state -->
-                <li class="nav-item">
-                    <a class="nav-link" href="/user/login">로그인</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/user/register">회원가입</a>
-                </li>
-                <!-- Logged-in state (Example) -->
-                <!--
-                <li class="nav-item">
-                  <span class="navbar-text me-2">[사용자 이름]님 환영합니다!</span>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">로그아웃</a>
-                </li>
-                -->
-            </ul>
-        </div>
-    </div>
-</nav>
 
 <div class="container mt-5">
     <!-- Alert Placeholder -->
@@ -102,6 +77,9 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 <script>
+    
+
+
     // 삭제 확인 함수
     function deletePost(id) {
         if (confirm('정말로 삭제하시겠습니까?')) {
@@ -113,5 +91,6 @@
         }
     }
 </script>
+<%@ include file="/WEB-INF/views/common/footer.jsp" %>
 </body>
 </html>
