@@ -68,7 +68,7 @@
         <!-- 게시글 데이터가 동적으로 추가될 부분 -->
         <c:forEach var="board" items="${boardList}">
             <tr>
-                <th scope="row">${board.postId}</th>
+                <th scope="row">${board.rn}</th>
                 <td>${board.category}</td>
                 <td><a href="view/${board.postId}">${board.title}</a></td>
                 <td>${board.userName}</td>
@@ -80,19 +80,31 @@
     </table>
 
     <!-- Pagination -->
+    <div class="d-flex justify-content-end mb-3">
+        <span>전체 : ${totalBoard}개</span>
+    </div>
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">이전</a>
-            </li>
-            <li class="page-item active" aria-current="page">
-                <a class="page-link" href="#">1</a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#">다음</a>
-            </li>
+            <c:if test="${prevPage != null}">
+                <li class="page-item">
+                    <a class="page-link" href="?page=${prevPage}">Previous</a>
+                </li>
+            </c:if>
+            <c:forEach var="pageNum" begin="${startPage}" end="${endPage}">
+                <c:choose>
+                    <c:when test="${pageNum == currentPage}">
+                        <li class="page-item active" aria-current="page">
+                            <a class="page-link" href="?page=${pageNum}">${pageNum}</a>
+                        </li>
+                    </c:when>
+                    <c:otherwise>
+                        <li class="page-item"><a class="page-link" href="?page=${pageNum}">${pageNum}</a></li>
+                    </c:otherwise>
+                </c:choose>
+            </c:forEach>
+            <c:if test="${nextPage != null}">
+                <li class="page-item"><a class="page-link" href="?page=${nextPage}">Next</a></li>
+            </c:if>
         </ul>
     </nav>
     <!-- End Pagination -->

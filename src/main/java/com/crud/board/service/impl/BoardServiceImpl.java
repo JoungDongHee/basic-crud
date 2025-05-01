@@ -22,8 +22,11 @@ public class BoardServiceImpl implements BoardService {
     private final UserMapper userMapper;
 
     @Override
-    public List<BoardListResDTO> boardList() {
-       return boardMapper.boardList();
+    public List<BoardListResDTO> boardList(int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        return boardMapper.boardListWithPaging(offset, pageSize);
+    }
+    public int countBoardList(){return boardMapper.countBoardList();
     }
 
     @Override

@@ -15,4 +15,6 @@ public interface BoardMapper {
     List<Categories> getCategoryList();
 
     BoardViewResDTO getView(int viewnumber);
+    List<BoardListResDTO> boardListWithPaging(int offset, int pageSize);
+    int countBoardList();
 }

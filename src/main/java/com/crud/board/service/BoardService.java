@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface BoardService {
     List<BoardListResDTO> boardList();
+    List<BoardListResDTO> boardListWithPaging(int page,int pageSize);
     Posts createBoard(BoardWriteReqDTO requestDto, Users users);
 
     List<Categories> getCategoryList();
