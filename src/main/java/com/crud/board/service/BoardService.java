@@ -11,7 +11,6 @@ import com.crud.user.entity.Users;
 import java.util.List;
 
 public interface BoardService {
-    List<BoardListResDTO> boardList();
     List<BoardListResDTO> boardListWithPaging(int page,int pageSize);
     Posts createBoard(BoardWriteReqDTO requestDto, Users users);
 
@@ -19,4 +18,5 @@ public interface BoardService {
 
     BoardViewResDTO getView(int viewnumber);
 
+    int countBoardList();
 }
