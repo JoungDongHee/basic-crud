@@ -3,6 +3,11 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.crud.board.mapper.BoardMapper">
+
+    <select id="findByPostId" parameterMap="java.lang.Integer" resultType="com.crud.board.entity.Posts">
+        SELECT *FROM Post where post_id = #{viewnumber} and userId = #{userid}
+    </select>
+
     <select id="boardList" resultType="com.crud.board.dto.BoardListResDTO">
         SELECT A.post_id ,
                B.`name` as category,
@@ -15,7 +20,7 @@
                  INNER JOIN Users AS C ON A.user_id = C.user_id;
     </select>
 
-    <insert id="createBoard" parameterType="com.crud.board.entity.Posts" useGeneratedKeys="true" keyProperty="userId">
+    <insert id="createBoard" parameterType="com.crud.board.entity.Posts" useGeneratedKeys="true" keyProperty="postId">
         insert into Posts(category_id, user_id, title, content, created_at, updated_at)
         VALUES (#{categoryId},#{userId},#{title},#{content},now(),now());
     </insert>
@@ -35,4 +40,8 @@
             INNER JOIN Users AS C ON A.user_id = C.user_id
         WHERE A.post_id = #{viewnumber}
     </select>
+
+    <delete id="deleteView" parameterMap="java.lang.Integer">
+        DELETE FROM Posts WHERE post_id = #{viewnumber} and userId = #{userid}
+    </delete>
 </mapper>

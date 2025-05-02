@@ -11,12 +11,12 @@ import com.crud.user.entity.Users;
 import java.util.List;
 
 public interface BoardService {
-    List<BoardListResDTO> boardListWithPaging(int page,int pageSize);
+    List<BoardListResDTO> boardList();
     Posts createBoard(BoardWriteReqDTO requestDto, Users users);
 
     List<Categories> getCategoryList();
 
     BoardViewResDTO getView(int viewnumber);
 
-    int countBoardList();
+    Boolean deleteView(int viewnumber,Users users);
 }
