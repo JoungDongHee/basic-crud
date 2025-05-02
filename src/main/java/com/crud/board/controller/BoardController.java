@@ -99,9 +99,9 @@ public class BoardController {
 
     @DeleteMapping("/view/{viewnumber}")
     public String delete(@PathVariable int viewnumber,HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Users user = (Users)session.getAttribute(SessionConstants.SESSION_USER_KEY);
         try {
+            HttpSession session = request.getSession();
+            Users user = (Users)session.getAttribute(SessionConstants.SESSION_USER_KEY);
             Boolean deleteView = boardService.deleteView(viewnumber,user);
             log.info("End deleting viewnumber {} , checked {}", viewnumber,deleteView);
         }catch (NullPointerException e) {

@@ -44,4 +44,8 @@
     <delete id="deleteView" parameterMap="java.lang.Integer">
         DELETE FROM Posts WHERE post_id = #{viewnumber} and userId = #{userid}
     </delete>
+
+    <select id="countBoardList" parameterMap="java.lang.Integer">
+        SELECT COUNT(*) Posts;
+    </select>
 </mapper>
