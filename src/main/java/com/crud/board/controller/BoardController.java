@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -71,5 +73,18 @@ public class BoardController {
         model.addAttribute("view",view);
         model.addAttribute("fileList",fileList);
         return "board/view";
+    }
+
+    @DeleteMapping("/view/{viewnumber}")
+    public String delete(@PathVariable int viewnumber,HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Users user = (Users)session.getAttribute(SessionConstants.SESSION_USER_KEY);
+        try {
+            Boolean deleteView = boardService.deleteView(viewnumber,user);
+            log.info("End deleting viewnumber {} , checked {}", viewnumber,deleteView);
+        }catch (NullPointerException e) {
+            return "redirect:/board/list";
+        }
+        return "redirect:/board/list";
     }
 }

@@ -10,9 +10,16 @@ import java.util.List;
 
 @Mapper
 public interface BoardMapper {
+
     List<BoardListResDTO> boardList();
+
     int createBoard(Posts board);
+
     List<Categories> getCategoryList();
 
     BoardViewResDTO getView(int viewnumber);
+
+    void deleteView(int viewnumber,int userid);
+
+    Posts findByPostId(int viewnumber,int userid);
 }
