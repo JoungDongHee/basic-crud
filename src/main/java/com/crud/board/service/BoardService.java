@@ -7,6 +7,7 @@ import com.crud.board.dto.BoardWriteReqDTO;
 import com.crud.board.entity.Categories;
 import com.crud.board.entity.Posts;
 import com.crud.user.entity.Users;
+import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 
@@ -16,6 +17,6 @@ public interface BoardService {
 
     List<Categories> getCategoryList();
 
-    BoardViewResDTO getView(int viewnumber);
-
+    BoardViewResDTO getView(int viewnumber, HttpSession session);
+    Boolean deleteView(int viewnumber,Users users);
 }

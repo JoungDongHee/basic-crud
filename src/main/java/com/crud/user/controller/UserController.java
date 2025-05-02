@@ -47,7 +47,7 @@ public class UserController {
         // 로그인 시도
         Users login = null;
         try {
-            login = userService.login(requestDTO.getUsername(), requestDTO.getPassword());
+            login = userService.login(requestDTO.getLoginId(), requestDTO.getPassword());
         } catch (Exception e) {
             log.error("로그인 처리 중 오류 발생", e);
             return "user/login";

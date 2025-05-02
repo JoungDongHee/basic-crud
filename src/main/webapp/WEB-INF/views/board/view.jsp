@@ -63,11 +63,11 @@
 
             <div class="d-flex justify-content-end pt-3 border-top">
                 <!-- 로그인 상태 및 작성자 확인 후 수정/삭제 버튼 표시 (서버 로직 필요) -->
-                <c:if test="${view.userId == sessionScope.userId}">
+                <c:if test="${view.edite}">
                     <a href="/board/edit?id=${param.viewnumber}" class="btn btn-outline-secondary me-2">수정</a>
                 </c:if>
                 <!-- 삭제 버튼은 id를 동적으로 전달해야 함 -->
-                <c:if test="${view.userId == sessionScope.userId}">
+                <c:if test="${view.edite}">
                     <button type="button" class="btn btn-outline-danger me-2" onclick="deletePost(${param.viewnumber})">삭제</button>
                 </c:if>
                 <a href="/board/list" class="btn btn-primary">목록</a>

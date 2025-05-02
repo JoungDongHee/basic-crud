@@ -65,11 +65,25 @@ public class BoardController {
     }
 
     @GetMapping("/view/{viewnumber}")
-    public String view(@PathVariable int viewnumber,Model model) {
-        BoardViewResDTO view = boardService.getView(viewnumber);
+    public String view(@PathVariable int viewnumber,Model model , HttpSession session) {
+        BoardViewResDTO view = boardService.getView(viewnumber,session);
         List<MultipartFile> fileList = new ArrayList<>();
         model.addAttribute("view",view);
         model.addAttribute("fileList",fileList);
         return "board/view";
+    }
+
+
+    @DeleteMapping("/view/{viewnumber}")
+    public String delete(@PathVariable int viewnumber,HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Users user = (Users)session.getAttribute(SessionConstants.SESSION_USER_KEY);
+        try {
+            Boolean deleteView = boardService.deleteView(viewnumber,user);
+            log.info("End deleting viewnumber {} , checked {}", viewnumber,deleteView);
+        }catch (NullPointerException e) {
+            return "redirect:/board/list";
+        }
+        return "redirect:/board/list";
     }
 }

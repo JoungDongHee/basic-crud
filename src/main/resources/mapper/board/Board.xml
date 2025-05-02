@@ -15,7 +15,7 @@
                  INNER JOIN Users AS C ON A.user_id = C.user_id;
     </select>
 
-    <insert id="createBoard" parameterType="com.crud.board.entity.Posts" useGeneratedKeys="true" keyProperty="userId">
+    <insert id="createBoard" parameterType="com.crud.board.entity.Posts" useGeneratedKeys="true" keyProperty="postId">
         insert into Posts(category_id, user_id, title, content, created_at, updated_at)
         VALUES (#{categoryId},#{userId},#{title},#{content},now(),now());
     </insert>
@@ -25,14 +25,17 @@
     </select>
 
     <select id="getView" parameterType="java.lang.Integer" resultType="com.crud.board.dto.BoardViewResDTO">
-        SELECT A.title ,
-               A.content ,
-               B.`name` as category ,
-               C.username as author ,
-               A.created_at as createdDate
+        SELECT A.title,
+               A.content,
+               A.user_id,
+               B.`name` AS category,
+               C.username AS author,
+               A.created_at AS createdDate,
+               FALSE AS edite
         FROM Posts AS A
-            INNER JOIN Categories AS B ON A.category_id = B.category_id
-            INNER JOIN Users AS C ON A.user_id = C.user_id
-        WHERE A.post_id = #{viewnumber}
+                 INNER JOIN Categories AS B ON A.category_id = B.category_id
+                 INNER JOIN Users AS C ON A.user_id = C.user_id
+        WHERE A.post_id = #{viewnumber};
+
     </select>
 </mapper>

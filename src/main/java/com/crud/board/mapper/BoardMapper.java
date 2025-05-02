@@ -15,4 +15,8 @@ public interface BoardMapper {
     List<Categories> getCategoryList();
 
     BoardViewResDTO getView(int viewnumber);
+
+    void deleteView(int viewnumber,int userid);
+
+    Posts findByPostId(int viewnumber,int userid);
 }

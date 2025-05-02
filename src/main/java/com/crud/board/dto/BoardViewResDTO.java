@@ -11,5 +11,7 @@ public class BoardViewResDTO {
     private String category;
     private String author;
     private String createdDate;
+    private String userId;
+    private boolean edite;
     //private List<MultipartFile> file;
 }

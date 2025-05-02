@@ -68,7 +68,7 @@
         <!-- 게시글 데이터가 동적으로 추가될 부분 -->
         <c:forEach var="board" items="${boardList}">
             <tr>
-                <th scope="row">${board.rn}</th>
+                <th scope="row">${board.postId}</th>
                 <td>${board.category}</td>
                 <td><a href="view/${board.postId}">${board.title}</a></td>
                 <td>${board.userName}</td>
