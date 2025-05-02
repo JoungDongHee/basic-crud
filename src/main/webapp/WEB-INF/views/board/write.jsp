@@ -88,7 +88,7 @@
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary me-2">저장</button>
-                    <a href="list.html" class="btn btn-secondary">취소</a>
+                    <a href="/board/list" class="btn btn-secondary">취소</a>
                 </div>
             </form>
         </div>

@@ -4,9 +4,9 @@
 
 <mapper namespace="com.crud.user.mapper.UserMapper">
 
-    <select id="findByUserId" parameterType="java.lang.String" resultType="com.crud.user.entity.Users">
-        SELECT *FROM Users
-        WHERE username = #{username}
+    <select id="findByUserId" parameterType="java.lang.String"  resultType="com.crud.user.entity.Users">
+        SELECT * FROM Users
+        WHERE username = #{userId}
     </select>
 
     <insert id="insertUser" parameterType="com.crud.user.entity.Users" useGeneratedKeys="true" keyProperty="userId">
@@ -16,7 +16,7 @@
 
 
     <select id="login" parameterType="java.util.Map" resultType="com.crud.user.entity.Users">
-        SELECT *FROM Users
+        SELECT * FROM Users
          WHERE username = #{username} and password_hash = #{password}
     </select>
 

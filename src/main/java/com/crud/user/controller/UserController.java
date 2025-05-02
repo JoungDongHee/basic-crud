@@ -5,6 +5,7 @@ import com.crud.user.dto.UserJoinReqeustDTO;
 import com.crud.user.dto.UserLginRequestDTO;
 import com.crud.user.entity.Users;
 import com.crud.user.service.UserService;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.net.http.HttpRequest;
 
 
 @Slf4j
@@ -48,13 +47,13 @@ public class UserController {
         // 로그인 시도
         Users login = null;
         try {
-            login = userService.login(requestDTO.getLoginId(), requestDTO.getPassword());
+            login = userService.login(requestDTO.getUsername(), requestDTO.getPassword());
         } catch (Exception e) {
             log.error("로그인 처리 중 오류 발생", e);
             return "user/login";
         }
 
-        if (login == null) {
+        if (login == null ) {
             log.info("로그인 실패: 사용자 {} 또는 비밀번호가 일치하지 않습니다.", requestDTO.getLoginId());
             bindingResult.addError(new ObjectError("userRequestDTO",null,null,"로그인 실패 사용자 또는 비밀번호가 일치하지 않습니다."));
             return "user/login";
@@ -128,4 +127,5 @@ public class UserController {
             return "user/register";
         }
     }
+
 }

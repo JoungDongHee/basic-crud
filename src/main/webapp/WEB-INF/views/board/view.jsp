@@ -63,11 +63,16 @@
 
             <div class="d-flex justify-content-end pt-3 border-top">
                 <!-- 로그인 상태 및 작성자 확인 후 수정/삭제 버튼 표시 (서버 로직 필요) -->
-                <a href="/board/edit?id=${param.viewnumber}" class="btn btn-outline-secondary me-2">수정</a>
+                <c:if test="${view.userId == sessionScope.userId}">
+                    <a href="/board/edit?id=${param.viewnumber}" class="btn btn-outline-secondary me-2">수정</a>
+                </c:if>
                 <!-- 삭제 버튼은 id를 동적으로 전달해야 함 -->
-                <button type="button" class="btn btn-outline-danger me-2" onclick="deletePost(${param.viewnumber})">삭제</button>
+                <c:if test="${view.userId == sessionScope.userId}">
+                    <button type="button" class="btn btn-outline-danger me-2" onclick="deletePost(${param.viewnumber})">삭제</button>
+                </c:if>
                 <a href="/board/list" class="btn btn-primary">목록</a>
             </div>
+
         </div> <!-- End card-body -->
     </div> <!-- End card -->
 
@@ -84,13 +89,28 @@
     function deletePost(id) {
         if (confirm('정말로 삭제하시겠습니까?')) {
             // 실제로는 서버에 삭제 요청 (POST 또는 DELETE 메서드 사용)
-            console.log('Deleting post with id:', id);
-            // 성공 시 목록 페이지로 리디렉션
-            alert('삭제되었습니다.');
-            window.location.href = '/board/list'; // 목록 페이지로 이동
+           fetch(`/board/delete?id=${id}`, {
+                method: 'DELETE',
+           })
+           .then(response => {
+               if (response.ok) {
+                    alert("게시글이 삭제되었습니다.");
+                    window.location.href = "/board/list";
+               } else {
+                    alert("삭제 실패하였습니다.");
+               }
+           })
+           .catch(error => {
+               console.error("삭제 요청 실패:", error);
+               alert("서버 오류로 삭제에 실패하였습니다.");
+           })
+
         }
     }
 </script>
+
+
+
 <%@ include file="/WEB-INF/views/common/footer.jsp" %>
 </body>
 </html>

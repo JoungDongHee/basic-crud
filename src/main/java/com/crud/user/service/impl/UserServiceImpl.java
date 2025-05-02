@@ -22,15 +22,15 @@ public class UserServiceImpl implements UserService {
     private final PasswordService passwordService;
 
     @Override
-    public Users login(String userId, String password) { // userId로 변경
-        Users user = userMapper.findByUserId(userId); // userId로 변경
+    public Users login(String username, String password) {
+        Users user = userMapper.findByUserId(username);
         if (user == null) {
-            log.info("사용자 ID가 존재하지 않습니다: {}", userId); // userId로 변경
+            log.info("사용자 ID가 존재하지 않습니다: {}", username);
             return null;
         }
         // 비밀번호 검증
         try {
-            boolean isPasswordValid = passwordService.checkPassword(password, user.getPasswordHash());
+             boolean isPasswordValid = passwordService.checkPassword(password, user.getPasswordHash());
             if (!isPasswordValid) {
                 log.info("로그인 실패: 비밀번호가 일치하지 않습니다.");
                 return null;
@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
-        log.info("로그인 성공: 사용자 {}", userId); // userId로 변경
+        log.info("로그인 성공: 사용자 {}", username);
         return user;
     }
 

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class UserLginRequestDTO {
     @NotBlank(message = "로그인 ID 는 공백일수 없습니다.")
-    private String loginId;
+    private String username;
 
     @NotBlank(message = "사용자 비밀번호는 공백일수 없습니다.")
     private String password;
