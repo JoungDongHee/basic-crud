@@ -47,8 +47,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Users join(UserJoinReqeustDTO user) {
-        //Argon2 argon2 = Argon2Factory.create();
-        //argon2.hash(1, 1024, 1, user.getPassword());
+        Argon2 argon2 = Argon2Factory.create();
+        argon2.hash(1, 1024, 1, user.getPassword());
 
         try {
             // 사용자 생성

@@ -15,10 +15,4 @@ public interface BoardMapper {
     List<Categories> getCategoryList();
 
     BoardViewResDTO getView(int viewnumber);
-    List<BoardListResDTO> boardListWithPaging(int offset, int pageSize);
-    int countBoardList();
-
-    void deleteView(int viewnumber,int userid);
-
-    Posts findByPostId(int viewnumber,int userid);
 }

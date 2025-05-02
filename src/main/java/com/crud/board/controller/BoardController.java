@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -34,29 +32,7 @@ public class BoardController {
 
     @GetMapping("/list")
     public String list(@RequestParam(value = "page", defaultValue = "1") int page, Model model) {
-        int pageSize = 10; // 페이지당 게시글 수
-        int blockSize = 5; // 페이지 블록 크기
-        List<BoardListResDTO> boardList = boardService.boardListWithPaging(page,pageSize);
-        int totalBoardCount = boardService.countBoardList();
-        int totalPage = (int) Math.ceil((double) totalBoardCount / pageSize);
-
-        // 페이지 블록 계산
-        int startPage = ((page - 1) / blockSize) * blockSize + 1;
-        int endPage = Math.min(startPage + blockSize - 1, totalPage);
-
-        // 이전 페이지 존재 여부
-        if (page > 1) {
-            model.addAttribute("prevPage", page - 1);
-        }
-
-        // 다음 페이지 존재 여부
-        if (page < totalPage) {
-            model.addAttribute("nextPage", page + 1);
-        }
-        model.addAttribute("currentPage", page);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
-        model.addAttribute("totalPage", totalPage);
+        List<BoardListResDTO> boardList = boardService.boardList();
         model.addAttribute("boardList", boardList);
         return "board/list";
     }
@@ -95,18 +71,5 @@ public class BoardController {
         model.addAttribute("view",view);
         model.addAttribute("fileList",fileList);
         return "board/view";
-    }
-
-    @DeleteMapping("/view/{viewnumber}")
-    public String delete(@PathVariable int viewnumber,HttpServletRequest request) {
-        try {
-            HttpSession session = request.getSession();
-            Users user = (Users)session.getAttribute(SessionConstants.SESSION_USER_KEY);
-            Boolean deleteView = boardService.deleteView(viewnumber,user);
-            log.info("End deleting viewnumber {} , checked {}", viewnumber,deleteView);
-        }catch (NullPointerException e) {
-            return "redirect:/board/list";
-        }
-        return "redirect:/board/list";
     }
 }
