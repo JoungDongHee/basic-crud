@@ -18,5 +18,4 @@ public interface BoardService {
 
     BoardViewResDTO getView(int viewnumber);
 
-    Boolean deleteView(int viewnumber,Users users);
 }
