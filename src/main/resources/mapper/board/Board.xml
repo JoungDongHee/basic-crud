@@ -4,17 +4,28 @@
 
 <mapper namespace="com.crud.board.mapper.BoardMapper">
     <select id="boardList" resultType="com.crud.board.dto.BoardListResDTO">
-        SELECT A.post_id ,
-               B.`name` as category,
-               A.title ,
-               A.created_at as createdDate,
-               A.updated_at as updatedDate,
-               C.username
+        SELECT
+            A.post_id,
+            B.name        AS category,
+            A.title,
+            A.created_at  AS createdDate,
+            A.updated_at  AS updatedDate,
+            C.username
         FROM Posts AS A
-                 INNER JOIN Categories AS B ON A.category_id = B.category_id
-                 INNER JOIN Users AS C ON A.user_id = C.user_id;
+                 INNER JOIN Categories AS B
+                            ON A.category_id = B.category_id
+                 INNER JOIN Users AS C
+                            ON A.user_id = C.user_id
+        ORDER BY
+            A.created_at DESC,
+            A.post_id DESC
+            LIMIT #{offset}, #{pageSize};
     </select>
 
+    <select id="countBoardList" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM Posts;
+    </select>
     <insert id="createBoard" parameterType="com.crud.board.entity.Posts" useGeneratedKeys="true" keyProperty="postId">
         insert into Posts(category_id, user_id, title, content, created_at, updated_at)
         VALUES (#{categoryId},#{userId},#{title},#{content},now(),now());

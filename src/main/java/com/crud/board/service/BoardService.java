@@ -12,11 +12,13 @@ import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 public interface BoardService {
-    List<BoardListResDTO> boardList();
+    List<BoardListResDTO> boardList(int page, int pageSize);
     Posts createBoard(BoardWriteReqDTO requestDto, Users users);
 
     List<Categories> getCategoryList();
 
     BoardViewResDTO getView(int viewnumber, HttpSession session);
     Boolean deleteView(int viewnumber,Users users);
+
+    int countBoardList();
 }

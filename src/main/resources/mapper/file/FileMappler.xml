@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.crud.file.FileMappler">
+    <insert id="insertFile" parameterType="com.crud.file.Attachments">
+        insert into Attachments (post_id, original_filename, stored_filename, filepath, filesize, mimetype,created_at)
+        VALUES (#{postId},#{originalFilename},#{storedFilename},#{filepath},#{filesize},#{mimetype},NOW())
+    </insert>
+
+    <select id="findByAttachmentId" parameterType="java.lang.Long" resultType="com.crud.file.Attachments">
+        SELECT *FROM Attachments WHERE post_id = #{postId}
+    </select>
+
+</mapper>

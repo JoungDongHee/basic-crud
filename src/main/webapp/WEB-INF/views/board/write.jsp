@@ -86,6 +86,13 @@
                     <label for="postFiles" class="form-label">파일 첨부</label>
                     <input class="form-control" type="file" id="postFiles" name="file" multiple>
                 </div>
+                <spring:hasBindErrors name="fileCheck">
+                    <div class="text-danger">
+                        <c:forEach var="error" items="${errors.globalErrors}">
+                            <c:out value="${error.defaultMessage}" />
+                        </c:forEach>
+                    </div>
+                </spring:hasBindErrors>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary me-2">저장</button>
                     <a href="/board/list" class="btn btn-secondary">취소</a>

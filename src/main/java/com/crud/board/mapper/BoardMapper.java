@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface BoardMapper {
-    List<BoardListResDTO> boardList();
+    List<BoardListResDTO> boardList(int offset,int pageSize);
     int createBoard(Posts board);
     List<Categories> getCategoryList();
 
@@ -19,4 +19,6 @@ public interface BoardMapper {
     void deleteView(int viewnumber,int userid);
 
     Posts findByPostId(int viewnumber,int userid);
+
+    int countBoardList();
 }

@@ -81,7 +81,7 @@
 
     <!-- Pagination -->
     <div class="d-flex justify-content-end mb-3">
-        <span>전체 : ${totalBoard}개</span>
+        <span>전체 : ${totalBoardCount}개</span>
     </div>
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">

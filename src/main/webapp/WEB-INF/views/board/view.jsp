@@ -48,14 +48,15 @@
             <div class="mb-4 border-top pt-3">
                 <h5><i class="bi bi-paperclip"></i> 첨부 파일</h5>
                 <ul class="list-group list-group-flush">
-                    <c:if test="${not empty fileList}">
-                        <c:forEach var="file" items="${fileList}">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="#" download><i class="bi bi-file-earmark me-2"></i>${file.fileName}</a>
-                            </li>
-                        </c:forEach>
+                    <c:if test="${not empty file}">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <!-- 파일 다운로드 링크 추가 -->
+                            <a href="/board/download/${file.attachmentId}" download>
+                                <i class="bi bi-file-earmark me-2"></i>${file.originalFilename}
+                            </a>
+                        </li>
                     </c:if>
-                    <c:if test="${empty fileList}">
+                    <c:if test="${empty file}">
                         <li class="list-group-item">첨부 파일이 없습니다.</li>
                     </c:if>
                 </ul>

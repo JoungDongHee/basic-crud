@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,21 +27,15 @@ public class BoardServiceImpl implements BoardService {
     private final BoardMapper boardMapper;
     private final UserMapper userMapper;
 
-//    @Override
-//    public List<BoardListResDTO> boardListWithPaging(int page, int pageSize) {
-//        int offset = (page - 1) * pageSize;
-//        return boardMapper.boardListWithPaging(offset, pageSize);
-//    }
-//
-//    @Override
-//    public int countBoardList() {
-//        return boardMapper.countBoardList();
-//    }
-
+    @Override
+    public List<BoardListResDTO> boardList(int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        return boardMapper.boardList(offset,pageSize);
+    }
 
     @Override
-    public List<BoardListResDTO> boardList() {
-        return boardMapper.boardList();
+    public int countBoardList() {
+        return boardMapper.countBoardList();
     }
 
     @Override
@@ -74,7 +69,9 @@ public class BoardServiceImpl implements BoardService {
 
     private static void extracted(HttpSession session, BoardViewResDTO view) {
         Users user = (Users) session.getAttribute(SessionConstants.SESSION_USER_KEY);
-        boolean edite = view.getUserId().equals(String.valueOf(user.getUserId()));
+        Optional<Users> user1 = Optional.ofNullable(user);
+        Boolean edite = user1.map(users -> view.getUserId().
+                equals(String.valueOf(users.getUserId()))).orElse(false);
         view.setEdite(edite);
     }
 

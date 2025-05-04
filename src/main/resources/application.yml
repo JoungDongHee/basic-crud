@@ -20,3 +20,6 @@ p6spy:
     dateFormat: yyyy-MM-dd HH:mm:ss
     logLevel: info
     realdriver: com.mysql.cj.jdbc.Driver
+
+file:
+  dir: D:\file
