@@ -8,6 +8,7 @@ import com.crud.board.entity.Categories;
 import com.crud.board.entity.Posts;
 import com.crud.board.mapper.BoardMapper;
 import com.crud.board.service.BoardService;
+import com.crud.file.FileService;
 import com.crud.user.entity.Users;
 import com.crud.user.mapper.UserMapper;
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +27,7 @@ import java.util.Optional;
 public class BoardServiceImpl implements BoardService {
     private final BoardMapper boardMapper;
     private final UserMapper userMapper;
+    private final FileService fileService;
 
     @Override
     public List<BoardListResDTO> boardList(int page, int pageSize) {
@@ -57,6 +59,12 @@ public class BoardServiceImpl implements BoardService {
                 .categoryId(Long.parseLong(requestDto.getCategory()))
                 .build();
         boardMapper.createBoard(posts);
+
+        boolean uploadFile = fileService.uploadFile((int) posts.getPostId(), requestDto.getFile());
+        if (!uploadFile) {
+            log.info("file upload failed : file is not safe");
+            return null;
+        }
         return posts;
     }
 

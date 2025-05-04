@@ -90,11 +90,9 @@ public class BoardController {
         // 성공 로직 (예: DB 저장 등) 입력
         Posts posts = boardService.createBoard(boardWriteRqDTO,users);
 
-        boolean uploadFile = fileService.uploadFile((int) posts.getPostId(), boardWriteRqDTO.getFile());
-
         // 파일 업로드 실패 처리
-        if (!uploadFile) {
-            bindingResult.addError(new ObjectError("fileCheck", "파일 업로드에 실패했습니다."));
+        if (posts == null) {
+            bindingResult.addError(new ObjectError("fileChe", "파일 업로드에 실패했습니다."));
             List<Categories> categoryList = boardService.getCategoryList();
             model.addAttribute("category", categoryList);
             model.addAttribute("boardWriteRqDTO", boardWriteRqDTO); // DTO 값 복원
