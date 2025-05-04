@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -75,7 +76,7 @@ public class BoardController {
     }
 
     @PostMapping("/write")
-    public String write(@Validated BoardWriteReqDTO boardWriteRqDTO , BindingResult bindingResult, Model model , HttpSession session) {
+    public String write(@Validated @ModelAttribute BoardWriteReqDTO boardWriteRqDTO , BindingResult bindingResult, Model model , HttpSession session) {
 
         if (bindingResult.hasErrors()) {
             log.info("bindingResult : {}", bindingResult.getAllErrors());
@@ -88,11 +89,11 @@ public class BoardController {
 
         Users users = (Users)session.getAttribute(SessionConstants.SESSION_USER_KEY);
         // 성공 로직 (예: DB 저장 등) 입력
-        Posts posts = boardService.createBoard(boardWriteRqDTO,users);
-
-        // 파일 업로드 실패 처리
-        if (posts == null) {
-            bindingResult.addError(new ObjectError("fileChe", "파일 업로드에 실패했습니다."));
+        Posts posts;
+        try {
+            posts = boardService.createBoard(boardWriteRqDTO,users);
+        }catch (RuntimeException e) {
+            bindingResult.addError(new ObjectError("boardCheck", e.getMessage()));
             List<Categories> categoryList = boardService.getCategoryList();
             model.addAttribute("category", categoryList);
             model.addAttribute("boardWriteRqDTO", boardWriteRqDTO); // DTO 값 복원

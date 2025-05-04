@@ -9,11 +9,13 @@ import com.crud.board.entity.Posts;
 import com.crud.board.mapper.BoardMapper;
 import com.crud.board.service.BoardService;
 import com.crud.file.FileService;
+import com.crud.file.UploadResult;
 import com.crud.user.entity.Users;
 import com.crud.user.mapper.UserMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,23 +49,28 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public Posts createBoard(BoardWriteReqDTO requestDto , Users users) {
+    public Posts createBoard(BoardWriteReqDTO requestDto , Users users){
         Users byUserId = userMapper.findByUserId(users.getUsername());
         if (byUserId.getUserId() != users.getUserId()){
             return null;
         }
+
         Posts posts = Posts.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
                 .userId(users.getUserId())
                 .categoryId(Long.parseLong(requestDto.getCategory()))
                 .build();
-        boardMapper.createBoard(posts);
+        try {
+            boardMapper.createBoard(posts);
+        } catch (Exception e) {
+            throw new RuntimeException("게시글 생성 실패", e);
+        }
 
-        boolean uploadFile = fileService.uploadFile((int) posts.getPostId(), requestDto.getFile());
-        if (!uploadFile) {
-            log.info("file upload failed : file is not safe");
-            return null;
+        UploadResult uploadFile = fileService.uploadFile((int) posts.getPostId(), requestDto.getFile());
+        if (!uploadFile.isSuccess()) {
+            log.info("file upload failed : {}", uploadFile.getMessage());
+            throw new FileUploadException(uploadFile.getMessage());
         }
         return posts;
     }
@@ -100,4 +107,12 @@ public class BoardServiceImpl implements BoardService {
         }
         return false;
     }
+
+    static class FileUploadException extends RuntimeException {
+        public FileUploadException(String message) {
+            super(message);
+        }
+    }
 }
+
+
