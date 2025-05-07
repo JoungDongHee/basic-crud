@@ -42,6 +42,13 @@
                 <!-- HTML 태그 렌더링이 필요하다면 서버에서 처리 후 출력 -->
             </div>
 
+            <!-- 좋아요/싫어요 버튼 -->
+            <div class="mb-4 text-center">
+                <button class="btn btn-outline-success btn-sm me-2 like-button" data-post-id="${view.postId}"><i class="bi bi-hand-thumbs-up"></i> 좋아요 (<span id="likeCount_${view.postId}">0</span>)</button>
+                <button class="btn btn-outline-danger btn-sm dislike-button" data-post-id="${view.postId}"><i class="bi bi-hand-thumbs-down"></i> 싫어요 (<span id="dislikeCount_${view.postId}">0</span>)</button>
+            </div>
+
+
             <!-- 첨부 파일 섹션 (파일이 있을 경우) -->
             <!-- 현재 파일 첨부 기능이 구현되어 있지 않아 주석 처리 -->
 
@@ -81,10 +88,9 @@
 
 <!-- Bootstrap JS Bundle (includes Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="/resources/js/likeDislike.js"></script>
 
 <script>
-    
-
 
     // 삭제 확인 함수
     function deletePost(id) {
@@ -108,6 +114,22 @@
 
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const likeButton = document.querySelector('.like-button');
+        const dislikeButton = document.querySelector('.dislike-button');
+
+        if (likeButton) {
+            likeButton.addEventListener('click', function() {
+                handleLike(this.dataset.postId);
+            });
+        }
+        if (dislikeButton) {
+            dislikeButton.addEventListener('click', function() {
+                handleDislike(this.dataset.postId);
+            });
+        }
+    });
 </script>
 
 

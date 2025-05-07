@@ -62,6 +62,8 @@
             <th scope="col">제목</th>
             <th scope="col">작성자</th>
             <th scope="col">작성일</th>
+            <th scope="col">좋아요</th>
+            <th scope="col">싫어요</th>
         </tr>
         </thead>
         <tbody>
@@ -73,6 +75,16 @@
                 <td><a href="view/${board.postId}">${board.title}</a></td>
                 <td>${board.userName}</td>
                 <td>${board.createdDate}</td>
+                <td>
+                    <button class="btn btn-outline-primary btn-sm like-button" data-post-id="${board.postId}">
+                        <i class="bi bi-hand-thumbs-up"></i> ${board.likeCount}
+                    </button>
+                </td>
+                <td>
+                    <button class="btn btn-outline-danger btn-sm dislike-button" data-post-id="${board.postId}">
+                        <i class="bi bi-hand-thumbs-down"></i> ${board.dislikeCount}
+                    </button>
+                </td>
             </tr>
         </c:forEach>
         <!-- 예시 데이터 -->
@@ -113,6 +125,7 @@
 
 <!-- Bootstrap JS Bundle (includes Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="/resources/js/likeDislike.js"></script>
 
 <script>
     // 간단한 삭제 확인 함수 (실제 구현에서는 서버 통신 필요)
@@ -125,6 +138,24 @@
             // window.location.reload(); // 페이지 새로고침 또는 DOM 조작
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add event listeners to all like buttons
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                handleLike(postId); // Assuming handleLike is defined in likeDislike.js
+            });
+        });
+
+        // Add event listeners to all dislike buttons
+        document.querySelectorAll('.dislike-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                handleDislike(postId); // Assuming handleDislike is defined in likeDislike.js
+            });
+        });
+    });
 </script>
 </body>
 </html>
