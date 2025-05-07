@@ -23,3 +23,7 @@ p6spy:
 
 file:
   dir: D:\file
+
+clamav:
+  host: localhost
+  port: 3391

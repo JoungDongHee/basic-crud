@@ -8,6 +8,7 @@ import com.crud.board.entity.Categories;
 import com.crud.board.entity.Posts;
 import com.crud.user.entity.Users;
 import jakarta.servlet.http.HttpSession;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 
 import java.util.List;
 
