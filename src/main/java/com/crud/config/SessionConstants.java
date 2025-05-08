@@ -1,4 +1,4 @@
-package com.crud;
+package com.crud.config;
 
 public class SessionConstants {
     // 세션 관련 상수

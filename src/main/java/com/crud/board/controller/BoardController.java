@@ -1,6 +1,6 @@
 package com.crud.board.controller;
 
-import com.crud.SessionConstants;
+import com.crud.config.SessionConstants;
 import com.crud.board.dto.BoardListResDTO;
 import com.crud.board.dto.BoardViewResDTO;
 import com.crud.board.dto.BoardWriteReqDTO;
@@ -10,22 +10,17 @@ import com.crud.board.service.BoardService;
 import com.crud.file.Attachments;
 import com.crud.file.FileService;
 import com.crud.user.entity.Users;
-import com.crud.file.FileUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

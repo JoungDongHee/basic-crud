@@ -1,11 +1,11 @@
 package com.crud.user.controller;
 
-import com.crud.SessionConstants;
+import com.crud.config.SessionConstants;
+import com.crud.session.SessionRepository;
 import com.crud.user.dto.UserJoinReqeustDTO;
 import com.crud.user.dto.UserLginRequestDTO;
 import com.crud.user.entity.Users;
 import com.crud.user.service.UserService;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.Duration;
 
 @Slf4j
 @Controller
@@ -29,16 +30,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final SessionRepository sessionRepository;
 
     @GetMapping("/login")
     public String login(HttpServletRequest request) {
-        // 이미 로그인된 사용자 정보가 있으면 바로 board/list로 리다이렉트
-        HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute(SessionConstants.SESSION_USER_KEY) != null) {
-            return "redirect:/board/list";
+        Users byId = sessionRepository.findById(request.getSession().getId(), Users.class);
+        // 이미 로그인된 사용자인지 체크
+        if (!(byId ==null)) {
+            return "redirect:/board/list";  // 이미 로그인된 경우 게시판으로 리다이렉트
         }
         return "user/login";
     }
+
 
     /**사용자의 로그인 정보를 검증하고, 인증을 시도하며, 로그인 성공 시 세션을 관리합니다.*/
     @PostMapping("/login")
@@ -65,9 +68,14 @@ public class UserController {
         }
 
         // 로그인 성공 시 세션 관리
-        HttpSession session = request.getSession();  // 기존 세션 가져오기 (새로 생성되지 않도록 false로 호출 가능)
-        session.setAttribute(SessionConstants.SESSION_USER_KEY, login);  // 세션에 사용자 정보 저장
-        log.info("로그인 성공: 사용자 ID - {}", login.getUsername());
+        HttpSession session = request.getSession();
+        // 기존 세션 정보 삭제 (로그인 상태 갱신)
+        session.setAttribute(SessionConstants.SESSION_USER_KEY, login);
+        log.info("User logged in successfully: {}", login.getUsername());
+
+        //session 처리 redis 저장
+        // 세션 ID를 키로 사용하고, Users 객체를 값으로 저장, 유효기간 1시간 설정
+        sessionRepository.save(session.getId(), login, Duration.ofHours(1));
 
         // 로그인 후 리다이렉트
         return "redirect:/board/list";
@@ -78,7 +86,9 @@ public class UserController {
     public String logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
-            log.info("User logged out: {}", session.getAttribute(SessionConstants.SESSION_USER_KEY));
+            log.info("User logged out: {}", session.getAttribute("loggedInUser"));
+            // Redis에서도 세션 정보 삭제
+            sessionRepository.deleteById(session.getId());
             session.invalidate();
         }
         return "redirect:/user/login";
