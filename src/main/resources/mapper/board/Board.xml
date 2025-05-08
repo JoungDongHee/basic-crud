@@ -36,13 +36,15 @@
     </select>
 
     <select id="getView" parameterType="java.lang.Integer" resultType="com.crud.board.dto.BoardViewResDTO">
-        SELECT A.title,
-               A.content,
-               A.user_id,
-               B.`name` AS category,
-               C.username AS author,
-               A.created_at AS createdDate,
-               FALSE AS edite
+        SELECT
+            A.post_id,
+            A.title,
+            A.content,
+            A.user_id,
+            B.`name` AS category,
+            C.username AS author,
+            A.created_at AS createdDate,
+            FALSE AS edite
         FROM Posts AS A
                  INNER JOIN Categories AS B ON A.category_id = B.category_id
                  INNER JOIN Users AS C ON A.user_id = C.user_id
