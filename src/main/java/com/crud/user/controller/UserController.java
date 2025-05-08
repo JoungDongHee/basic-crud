@@ -1,7 +1,7 @@
 package com.crud.user.controller;
 
 import com.crud.config.SessionConstants;
-import com.crud.redis.RedisService;
+import com.crud.session.SessionRepository;
 import com.crud.user.dto.UserJoinReqeustDTO;
 import com.crud.user.dto.UserLginRequestDTO;
 import com.crud.user.entity.Users;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.Duration;
 
 @Slf4j
 @Controller
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final RedisService redisService;
+    private final SessionRepository sessionRepository;
 
     @GetMapping("/login")
     public String login() {
@@ -67,7 +68,8 @@ public class UserController {
         log.info("User logged in successfully: {}", login.getUsername());
 
         //session 처리 redis 저장
-        redisService.set(SessionConstants.SESSION_USER_KEY, login);
+        // 세션 ID를 키로 사용하고, Users 객체를 값으로 저장, 유효기간 1시간 설정
+        sessionRepository.save(session.getId(), login, Duration.ofHours(1));
 
         // 로그인 후 리다이렉트
         return "redirect:/board/list";
@@ -79,6 +81,8 @@ public class UserController {
         HttpSession session = request.getSession(false);
         if (session != null) {
             log.info("User logged out: {}", session.getAttribute("loggedInUser"));
+            // Redis에서도 세션 정보 삭제
+            sessionRepository.deleteById(session.getId());
             session.invalidate();
         }
         return "redirect:/user/login";
