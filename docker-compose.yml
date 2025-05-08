@@ -1,14 +1,21 @@
 version: '3.8'
 
 services:
+  clamav:
+    image: clamav/clamav:latest
+    ports:
+      - "3310:3310"
+
   mariadb:
     image: mariadb:11.3
     container_name: mariadb
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: rootpassword   # 루트 비밀번호
-      MARIADB_DATABASE: mydatabase          # 기본 생성할 DB 이름
-      MARIADB_USER: myuser                  # 사용자 이름
-      MARIADB_PASSWORD: mypassword          # 사용자 비밀번호
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}  # 환경변수 사용
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # SQL 파일을 마운트하여 자동 실행
     ports:
-      - "3390:3306"
+      - "3390:3306"  # 호스트와 컨테이너 포트가 일치하도록 조정
