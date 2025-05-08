@@ -13,4 +13,6 @@ public class BoardListResDTO {
     private String userName;
     private String createdDate;
     private String updatedDate;
+    private int likeCount;
+    private int dislikeCount;
 }

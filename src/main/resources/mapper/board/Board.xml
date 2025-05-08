@@ -36,7 +36,9 @@
     </select>
 
     <select id="getView" parameterType="java.lang.Integer" resultType="com.crud.board.dto.BoardViewResDTO">
-        SELECT A.title,
+        SELECT
+               A.post_id,
+               A.title,
                A.content,
                A.user_id,
                B.`name` AS category,

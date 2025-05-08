@@ -1,11 +1,11 @@
 package com.crud.user.controller;
 
-import com.crud.SessionConstants;
+import com.crud.config.SessionConstants;
+import com.crud.redis.RedisService;
 import com.crud.user.dto.UserJoinReqeustDTO;
 import com.crud.user.dto.UserLginRequestDTO;
 import com.crud.user.entity.Users;
 import com.crud.user.service.UserService;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final RedisService redisService;
 
     @GetMapping("/login")
     public String login() {
@@ -64,6 +65,9 @@ public class UserController {
         // 기존 세션 정보 삭제 (로그인 상태 갱신)
         session.setAttribute(SessionConstants.SESSION_USER_KEY, login);
         log.info("User logged in successfully: {}", login.getUsername());
+
+        //session 처리 redis 저장
+        redisService.set(SessionConstants.SESSION_USER_KEY,"DDD");
 
         // 로그인 후 리다이렉트
         return "redirect:/board/list";

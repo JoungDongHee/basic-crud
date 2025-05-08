@@ -1,4 +1,4 @@
-package com.crud;
+package com.crud.config;
 
 import com.crud.interceptor.CommonInterceptor;
 import com.crud.interceptor.ErrorInterCeptor;

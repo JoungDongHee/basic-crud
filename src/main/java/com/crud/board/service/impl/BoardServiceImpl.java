@@ -1,6 +1,6 @@
 package com.crud.board.service.impl;
 
-import com.crud.SessionConstants;
+import com.crud.config.SessionConstants;
 import com.crud.board.dto.BoardListResDTO;
 import com.crud.board.dto.BoardViewResDTO;
 import com.crud.board.dto.BoardWriteReqDTO;
@@ -15,12 +15,10 @@ import com.crud.user.mapper.UserMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service

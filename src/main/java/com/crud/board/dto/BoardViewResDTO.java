@@ -9,6 +9,7 @@ import java.util.List;
 @Builder
 @Data
 public class BoardViewResDTO {
+    private int postId;
     private String title;
     private String content;
     private String category;
