@@ -33,9 +33,15 @@ public class UserController {
     private final SessionRepository sessionRepository;
 
     @GetMapping("/login")
-    public String login() {
+    public String login(HttpServletRequest request) {
+        Users byId = sessionRepository.findById(request.getSession().getId(), Users.class);
+        // 이미 로그인된 사용자인지 체크
+        if (!(byId ==null)) {
+            return "redirect:/board/list";  // 이미 로그인된 경우 게시판으로 리다이렉트
+        }
         return "user/login";
     }
+
 
     /**사용자의 로그인 정보를 검증하고, 인증을 시도하며, 로그인 성공 시 세션을 관리합니다.*/
     @PostMapping("/login")
