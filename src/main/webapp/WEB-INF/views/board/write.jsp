@@ -1,4 +1,4 @@
-<%@ include file="/WEB-INF/views/common/_taglibs.jsp" %>
+<%@ include file="/WEB-INF/views/common/header.jsp" %> <!-- header.jsp 포함 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -10,25 +10,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="list.html">게시판</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="login.html">로그인</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="register.html">회원가입</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
 
 <div class="container mt-5">
     <div class="card">
@@ -105,6 +86,8 @@
         </div>
     </div>
 </div>
+
+<%@ include file="/WEB-INF/views/common/footer.jsp" %> <!-- footer.jsp 포함 -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

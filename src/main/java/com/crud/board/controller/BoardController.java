@@ -103,8 +103,8 @@ public class BoardController {
         return "redirect:/board/view/"+posts.getPostId();
     }
 
-    @GetMapping("/edit")
-    public String edit(HttpServletRequest request) {
+    @GetMapping("/edit/{viewnumber}")
+    public String edit(HttpServletRequest request,@PathVariable int viewnumber, Model model) {
         return "board/edit";
     }
 

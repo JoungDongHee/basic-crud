@@ -44,7 +44,9 @@
             B.`name` AS category,
             C.username AS author,
             A.created_at AS createdDate,
-            FALSE AS edite
+            FALSE AS edite,
+            0 as likeCount,
+            0 as dislikeCount
         FROM Posts AS A
                  INNER JOIN Categories AS B ON A.category_id = B.category_id
                  INNER JOIN Users AS C ON A.user_id = C.user_id

@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="/WEB-INF/views/common/_taglibs.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -27,16 +28,27 @@
     </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="/">홈</a></li>
-                <li><a href="/board/list.do">게시글 목록</a></li>
-                <li><a href="/user/login.do">로그인</a></li>
-                <li><a href="/user/register.do">회원가입</a></li>
-                <li><a href="/user/forgot-password.do">비밀번호 찾기</a></li>
-            </ul>
-        </nav>
-    </header>
+<header>
+    <nav>
+        <ul>
+            <li><a href="/">홈</a></li>
+            <li><a href="/board/list.do">게시글 목록</a></li>
+            <c:choose>
+                <c:when test="${not empty sessionScope.loggedInUser}">
+                    <!-- 로그인된 상태에서 사용자 이름과 로그아웃 버튼 표시 -->
+                    <li>${sessionScope.loggedInUser.username} 님 반갑습니다.</li>
+                    <li><a href="/user/logout.do">로그아웃</a></li>
+                </c:when>
+                <c:otherwise>
+                    <!-- 로그인하지 않은 경우 로그인 버튼 표시 -->
+                    <li><a href="/user/login.do">로그인</a></li>
+                    <!-- 회원가입 및 비밀번호 찾기 버튼은 항상 표시 -->
+                    <li><a href="/user/register.do">회원가입</a></li>
+                    <li><a href="/user/forgot-password.do">비밀번호 찾기</a></li>
+                </c:otherwise>
+            </c:choose>
+        </ul>
+    </nav>
+</header>
 </body>
 </html>

@@ -31,7 +31,12 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/login")
-    public String login() {
+    public String login(HttpServletRequest request) {
+        // 이미 로그인된 사용자 정보가 있으면 바로 board/list로 리다이렉트
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute(SessionConstants.SESSION_USER_KEY) != null) {
+            return "redirect:/board/list";
+        }
         return "user/login";
     }
 
@@ -60,10 +65,9 @@ public class UserController {
         }
 
         // 로그인 성공 시 세션 관리
-        HttpSession session = request.getSession();
-        // 기존 세션 정보 삭제 (로그인 상태 갱신)
-        session.setAttribute(SessionConstants.SESSION_USER_KEY, login);
-        log.info("User logged in successfully: {}", login.getUsername());
+        HttpSession session = request.getSession();  // 기존 세션 가져오기 (새로 생성되지 않도록 false로 호출 가능)
+        session.setAttribute(SessionConstants.SESSION_USER_KEY, login);  // 세션에 사용자 정보 저장
+        log.info("로그인 성공: 사용자 ID - {}", login.getUsername());
 
         // 로그인 후 리다이렉트
         return "redirect:/board/list";
@@ -74,7 +78,7 @@ public class UserController {
     public String logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
-            log.info("User logged out: {}", session.getAttribute("loggedInUser"));
+            log.info("User logged out: {}", session.getAttribute(SessionConstants.SESSION_USER_KEY));
             session.invalidate();
         }
         return "redirect:/user/login";

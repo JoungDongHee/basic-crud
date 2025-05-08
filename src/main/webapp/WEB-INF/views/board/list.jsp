@@ -1,5 +1,7 @@
-<%@ include file="/WEB-INF/views/common/_taglibs.jsp" %>
+<%@ include file="/WEB-INF/views/common/header.jsp" %> <!-- header.jsp 포함 -->
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -9,44 +11,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Optional: Add custom CSS link here if needed later -->
-    <!-- <link rel="stylesheet" href="style.css"> -->
 </head>
 <body>
-<!-- 게시글 목록 화면 -->
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="list.html">게시판</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <!-- Logged-out state -->
-                <li class="nav-item">
-                    <a class="nav-link" href="login.html">로그인</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="register.html">회원가입</a>
-                </li>
-                <!-- Logged-in state (Example - comment out the above and uncomment below when logged in) -->
-                <!--
-                <li class="nav-item">
-                  <span class="navbar-text me-2">[사용자 이름]님 환영합니다!</span>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">로그아웃</a>
-                </li>
-                -->
-            </ul>
-        </div>
-    </div>
-</nav>
 
 <div class="container mt-5">
-    <!-- Alert Placeholder - Moved here -->
-    <div id="alertPlaceholder" class="mb-3"></div>
+    <!-- 게시글 목록 화면 -->
 
     <h1 class="mb-4 text-center">게시판</h1>
 
@@ -87,7 +56,6 @@
                 </td>
             </tr>
         </c:forEach>
-        <!-- 예시 데이터 -->
         </tbody>
     </table>
 
@@ -123,7 +91,8 @@
 
 </div>
 
-<!-- Bootstrap JS Bundle (includes Popper) -->
+<%@ include file="/WEB-INF/views/common/footer.jsp" %> <!-- footer.jsp 포함 -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="/resources/js/likeDislike.js"></script>
 

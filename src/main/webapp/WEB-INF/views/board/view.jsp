@@ -1,4 +1,4 @@
-<%@ include file="/WEB-INF/views/common/header.jsp" %>
+<%@ include file="/WEB-INF/views/common/header.jsp" %> <!-- header.jsp 포함 -->
 <%@ include file="/WEB-INF/views/common/_taglibs.jsp" %>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
@@ -7,7 +7,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 서버에서 받아온 게시글 제목으로 동적 설정 -->
     <title>${view.title} - 게시글 상세 보기</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -16,16 +15,12 @@
 </head>
 <body>
 
-<!-- 게시글 상세 보기 화면 -->
-
-
 <div class="container mt-5">
-    <!-- Alert Placeholder -->
     <div id="alertPlaceholder" class="mb-3"></div>
 
     <div class="card">
         <div class="card-body">
-            <!-- 서버에서 받아온 게시글 제목 -->
+            <!-- 게시글 제목 -->
             <h1 class="card-title mb-3">${view.title}</h1>
 
             <div class="card-subtitle text-muted mb-4 border-bottom pb-2">
@@ -36,28 +31,27 @@
                 <span class="float-end"><strong>작성일:</strong> ${view.createdDate}</span>
             </div>
 
-            <!-- 서버에서 받아온 게시글 내용 -->
+            <!-- 게시글 내용 -->
             <div class="card-text mb-4" style="min-height: 150px;">
-                ${view.content}
-                <!-- HTML 태그 렌더링이 필요하다면 서버에서 처리 후 출력 -->
+                ${view.content}  <!-- 내용 출력 (HTML로 렌더링) -->
             </div>
 
             <!-- 좋아요/싫어요 버튼 -->
             <div class="mb-4 text-center">
-                <button class="btn btn-outline-success btn-sm me-2 like-button" data-post-id="${view.postId}"><i class="bi bi-hand-thumbs-up"></i> 좋아요 (<span id="likeCount_${view.postId}">0</span>)</button>
-                <button class="btn btn-outline-danger btn-sm dislike-button" data-post-id="${view.postId}"><i class="bi bi-hand-thumbs-down"></i> 싫어요 (<span id="dislikeCount_${view.postId}">0</span>)</button>
+                <button class="btn btn-outline-success btn-sm me-2 like-button" data-post-id="${view.postId}">
+                    <i class="bi bi-hand-thumbs-up"></i> 좋아요 (<span id="likeCount_${view.postId}">${view.likeCount}</span>)
+                </button>
+                <button class="btn btn-outline-danger btn-sm dislike-button" data-post-id="${view.postId}">
+                    <i class="bi bi-hand-thumbs-down"></i> 싫어요 (<span id="dislikeCount_${view.postId}">${view.dislikeCount}</span>)
+                </button>
             </div>
 
-
-            <!-- 첨부 파일 섹션 (파일이 있을 경우) -->
-            <!-- 현재 파일 첨부 기능이 구현되어 있지 않아 주석 처리 -->
-
+            <!-- 첨부 파일 섹션 -->
             <div class="mb-4 border-top pt-3">
                 <h5><i class="bi bi-paperclip"></i> 첨부 파일</h5>
                 <ul class="list-group list-group-flush">
                     <c:if test="${not empty file}">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <!-- 파일 다운로드 링크 추가 -->
                             <a href="/board/download/${file.attachmentId}" download>
                                 <i class="bi bi-file-earmark me-2"></i>${file.originalFilename}
                             </a>
@@ -69,12 +63,11 @@
                 </ul>
             </div>
 
+            <!-- 수정/삭제 버튼 (작성자만 가능) -->
             <div class="d-flex justify-content-end pt-3 border-top">
-                <!-- 로그인 상태 및 작성자 확인 후 수정/삭제 버튼 표시 (서버 로직 필요) -->
                 <c:if test="${view.edite}">
                     <a href="/board/edit?id=${param.viewnumber}" class="btn btn-outline-secondary me-2">수정</a>
                 </c:if>
-                <!-- 삭제 버튼은 id를 동적으로 전달해야 함 -->
                 <c:if test="${view.edite}">
                     <button type="button" class="btn btn-outline-danger me-2" onclick="deletePost(${param.viewnumber})">삭제</button>
                 </c:if>
@@ -91,49 +84,44 @@
 <script src="/resources/js/likeDislike.js"></script>
 
 <script>
-
-    // 삭제 확인 함수
+    // 간단한 삭제 확인 함수
     function deletePost(id) {
         if (confirm('정말로 삭제하시겠습니까?')) {
-            // 실제로는 서버에 삭제 요청 (POST 또는 DELETE 메서드 사용)
-           fetch(`/board/delete?id=${id}`, {
+            fetch(`/board/delete?id=${id}`, {
                 method: 'DELETE',
-           })
-           .then(response => {
-               if (response.ok) {
-                    alert("게시글이 삭제되었습니다.");
-                    window.location.href = "/board/list";
-               } else {
-                    alert("삭제 실패하였습니다.");
-               }
-           })
-           .catch(error => {
-               console.error("삭제 요청 실패:", error);
-               alert("서버 오류로 삭제에 실패하였습니다.");
-           })
-
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert("게시글이 삭제되었습니다.");
+                        window.location.href = "/board/list";
+                    } else {
+                        alert("삭제 실패하였습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error("삭제 요청 실패:", error);
+                    alert("서버 오류로 삭제에 실패하였습니다.");
+                })
         }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        const likeButton = document.querySelector('.like-button');
-        const dislikeButton = document.querySelector('.dislike-button');
-
-        if (likeButton) {
-            likeButton.addEventListener('click', function() {
+        // Add event listeners to all like buttons
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', function() {
                 handleLike(this.dataset.postId);
             });
-        }
-        if (dislikeButton) {
-            dislikeButton.addEventListener('click', function() {
+        });
+        // Add event listeners to all dislike buttons
+        document.querySelectorAll('.dislike-button').forEach(button => {
+            button.addEventListener('click', function() {
                 handleDislike(this.dataset.postId);
             });
-        }
+        });
     });
 </script>
 
+<%@ include file="/WEB-INF/views/common/footer.jsp" %> <!-- footer.jsp 포함 -->
 
-
-<%@ include file="/WEB-INF/views/common/footer.jsp" %>
 </body>
 </html>

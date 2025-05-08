@@ -17,4 +17,6 @@ public class BoardViewResDTO {
     private String createdDate;
     private String userId;
     private boolean edite;
+    private int likeCount;
+    private int dislikeCount;
 }
