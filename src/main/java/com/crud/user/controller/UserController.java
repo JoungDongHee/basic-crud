@@ -67,7 +67,7 @@ public class UserController {
         log.info("User logged in successfully: {}", login.getUsername());
 
         //session 처리 redis 저장
-        redisService.set(SessionConstants.SESSION_USER_KEY,"DDD");
+        redisService.set(SessionConstants.SESSION_USER_KEY, login);
 
         // 로그인 후 리다이렉트
         return "redirect:/board/list";
