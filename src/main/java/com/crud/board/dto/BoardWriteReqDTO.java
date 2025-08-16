@@ -16,7 +16,7 @@ public class BoardWriteReqDTO {
     @NotEmpty
     private String category;
     @NotNull
-    @NotEmpty(message = "본문 은 필수 값 입니다.")
+    @NotEmpty(message = "본문 은 필수 값 입니다.44")
     private String content;
     private MultipartFile file;
 }
