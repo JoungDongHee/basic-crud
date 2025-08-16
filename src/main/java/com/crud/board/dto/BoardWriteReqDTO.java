@@ -12,7 +12,7 @@ public class BoardWriteReqDTO {
     @NotNull
     @NotEmpty(message = "제목은 필수 값 입니다.111")
     private String title;
-    @NotNull(message = "카테고리는 필수 값 입니다.")
+    @NotNull(message = "카테고리는 필수 값 입니다.11")
     @NotEmpty
     private String category;
     @NotNull
