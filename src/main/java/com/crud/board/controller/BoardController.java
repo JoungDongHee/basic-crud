@@ -34,7 +34,7 @@ public class BoardController {
     private final FileService fileService;
 
     @GetMapping("/list")
-    public String list(@RequestParam(value = "page44", defaultValue = "1") int page, Model model) {
+    public String list(@RequestParam(value = "page4411", defaultValue = "1") int page, Model model) {
         int pageSize = 10; // 페이지당 게시글 수
         int blockSize = 5; // 페이지 블록 크기
         List<BoardListResDTO> boardList = boardService.boardList(page,pageSize);
