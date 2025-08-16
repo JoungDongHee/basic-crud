@@ -1,86 +1,76 @@
-# .github/workflows/notify-dto-changes.yml
-name: Notify DTO changes to Discord
+name: Notify Discord when DTO changed (on push)
 
 on:
   push:
-    paths:
-      - 'src/main/java/**/dto/**'
-      - '**/*DTO.java'
-  pull_request:
-    paths:
-      - 'src/main/java/**/dto/**'
-      - '**/*DTO.java'
+    branches:
+      - main
 
 jobs:
-  notify:
+  notify-dto:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
-      - name: Determine changed files
-        id: files
+      - name: Check commits for DTO file changes
+        id: check_dto
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BEFORE="${{ github.event.pull_request.base.sha }}"
-            AFTER="${{ github.event.pull_request.head.sha }}"
-          else
-            BEFORE="${{ github.event.before }}"
-            AFTER="${{ github.sha }}"
+          echo "Scanning commits in event payload..."
+          found=false
+          commit_msg=""
+          commit_id=""
+          # event JSON에는 commits 배열이 있음 (push 이벤트)
+          len=$(jq '.commits | length' "$GITHUB_EVENT_PATH")
+          for i in $(seq 0 $(($len - 1))); do
+            # added/modified arrays 합치기
+            added=$(jq -r ".commits[$i].added[]" "$GITHUB_EVENT_PATH" 2>/dev/null || true)
+            modified=$(jq -r ".commits[$i].modified[]" "$GITHUB_EVENT_PATH" 2>/dev/null || true)
+            files=$(printf "%s\n%s\n" "$added" "$modified" | sed '/^$/d' || true)
+
+            for f in $files; do
+              # DTO 패턴: 패키지에 dto가 포함되거나 파일명에 Dto가 붙은 경우
+              if echo "$f" | grep -E '(^|/)dto(/|$)|[A-Za-z0-9_]*Dto\.java$' >/dev/null; then
+                echo "DTO change detected: $f"
+                found=true
+                commit_msg=$(jq -r ".commits[$i].message" "$GITHUB_EVENT_PATH")
+                commit_id=$(jq -r ".commits[$i].id" "$GITHUB_EVENT_PATH")
+                break 2
+              fi
+            done
+          done
+
+          if [ "$found" = true ]; then
+            echo "found=true" >> $GITHUB_ENV
+            echo "commit_message=$commit_msg" >> $GITHUB_ENV
+            echo "commit_id=$commit_id" >> $GITHUB_ENV
           fi
-          
-          echo "Before: $BEFORE"
-          echo "After:  $AFTER"
-          
-          git fetch origin "$BEFORE" "$AFTER" || true
-          
-          CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" || true)
-          
-          echo "::debug::changed files: $CHANGED"
-          echo "changed-files=${CHANGED}" >> "$GITHUB_OUTPUT"
 
-      - name: Filter DTO files
-        id: dto_check
-        run: |
-          CHANGED_FILES="${{ steps.files.outputs.changed-files }}"
-          echo "All changed files:"
-          echo "$CHANGED_FILES"
-          
-          DTOS=$(echo "$CHANGED_FILES" | grep -E '(^|/)[^/]*Dto\.java$|/dto/' || true)
-          echo "::debug::found dto files: $DTOS"
-          echo "dto-files=${DTOS}" >> "$GITHUB_OUTPUT"
-
-      - name: Send Discord notification (only if DTO changed)
-        if: ${{ steps.dto_check.outputs.dto-files != '' }}
+      - name: Notify Discord (when DTO changed)
+        if: env.found == 'true'
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          WEBHOOK="$DISCORD_WEBHOOK_URL"
-          REPO="${{ github.repository }}"
-          ACTOR="${{ github.actor }}"
-          REF="${{ github.ref }}"
-          URL="https://github.com/${REPO}/commit/${{ github.sha }}"
-          
-          FILES_ONE_LINE=$(echo "${{ steps.dto_check.outputs.dto-files }}" | tr '\n' ' ')
+          actor="${{ github.actor }}"
+          repo="${{ github.repository }}"
+          commit="${{ env.commit_id }}"
+          commit_msg="${{ env.commit_message }}"
+          commit_url="https://github.com/${repo}/commit/${commit}"
 
-          curl -H "Content-Type: application/json" -X POST --data-raw '
-            {
-              "embeds": [
-                {
-                  "title": "DTO 변경 감지",
-                  "description": "Spring DTO 파일이 변경되었습니다.",
-                  "color": 3447003,
-                  "fields": [
-                    {"name": "Repository", "value": "'"${REPO}"'", "inline": true},
-                    {"name": "Trigger", "value": "'"${{ github.event_name }}"'", "inline": true},
-                    {"name": "Actor", "value": "'"${ACTOR}"'", "inline": true},
-                    {"name": "Ref / Commit", "value": "'"${REF}"' / [view commit]('"${URL}"')", "inline": false},
-                    {"name": "Changed DTO files", "value": "```\n'"${FILES_ONE_LINE}"'\n```", "inline": false}
+          payload=$(jq -n --arg actor "$actor" \
+                          --arg repo "$repo" \
+                          --arg commit_msg "$commit_msg" \
+                          --arg commit_url "$commit_url" \
+                '{
+                  "embeds": [
+                    {
+                      "title": "DTO 파일 변경 감지",
+                      "description": "\($actor) 님이 DTO 관련 파일을 변경했습니다.\n\($commit_msg)\n[커밋 보기](\($commit_url))",
+                      "color": 3447003,
+                      "timestamp": now | todateiso8601
+                    }
                   ]
-                }
-              ]
-            }' "$WEBHOOK"
+                }')
+
+          curl -H "Content-Type: application/json" -X POST -d "$payload" "$DISCORD_WEBHOOK"
