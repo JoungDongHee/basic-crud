@@ -3,15 +3,13 @@ name: Notify DTO changes to Discord
 
 on:
   push:
-    branches:
-      - main  # 또는 'master', 'develop' 등 메인 브랜치 지정
     paths:
       - 'src/main/java/**/dto/**'
-      - '**/*Dto.java'
+      - '**/*DTO.java'
   pull_request:
     paths:
       - 'src/main/java/**/dto/**'
-      - '**/*Dto.java'
+      - '**/*DTO.java'
 
 jobs:
   notify:
@@ -22,7 +20,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          # Pull Request의 경우, base branch를 가져오기 위해 fetch-depth를 0으로 설정
           fetch-depth: 0
 
       - name: Determine changed files
@@ -35,16 +32,13 @@ jobs:
             BEFORE="${{ github.event.before }}"
             AFTER="${{ github.sha }}"
           fi
-
+          
           echo "Before: $BEFORE"
           echo "After:  $AFTER"
-
-          # git fetch를 통해 base와 head 커밋 정보를 모두 가져옵니다.
+          
           git fetch origin "$BEFORE" "$AFTER" || true
-
-          # 두 커밋 간의 변경된 파일 목록을 가져옵니다.
-          # 초기 커밋일 경우 `BEFORE`가 0으로 나올 수 있으므로 `..`을 사용합니다.
-          CHANGED=$(git diff --name-only $BEFORE..$AFTER || true)
+          
+          CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" || true)
           
           echo "::debug::changed files: $CHANGED"
           echo "changed-files=${CHANGED}" >> "$GITHUB_OUTPUT"
@@ -56,7 +50,6 @@ jobs:
           echo "All changed files:"
           echo "$CHANGED_FILES"
           
-          # 변경된 파일 목록을 한 줄씩 필터링하여 DTO 파일만 추출
           DTOS=$(echo "$CHANGED_FILES" | grep -E '(^|/)[^/]*Dto\.java$|/dto/' || true)
           echo "::debug::found dto files: $DTOS"
           echo "dto-files=${DTOS}" >> "$GITHUB_OUTPUT"
@@ -72,7 +65,6 @@ jobs:
           REF="${{ github.ref }}"
           URL="https://github.com/${REPO}/commit/${{ github.sha }}"
           
-          # 띄어쓰기를 구분자로 변경하여 한 줄로 만듦
           FILES_ONE_LINE=$(echo "${{ steps.dto_check.outputs.dto-files }}" | tr '\n' ' ')
 
           curl -H "Content-Type: application/json" -X POST --data-raw '
