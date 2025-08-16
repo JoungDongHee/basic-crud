@@ -10,13 +10,13 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 public class BoardWriteReqDTO {
     @NotNull
-    @NotEmpty(message = "제목은 필수 값 입니다.111")
+    @NotEmpty(message = "제목은 필수 값 입니다.")
     private String title;
     @NotNull(message = "카테고리는 필수 값 입니다.")
     @NotEmpty
     private String category;
     @NotNull
-    @NotEmpty(message = "본문 은 필수 값 입니다.44")
+    @NotEmpty(message = "본문 은 필수 값 입니다.")
     private String content;
     private MultipartFile file;
 }
