@@ -1,76 +1,175 @@
-name: Notify Discord when DTO changed (on push)
+name: DTO Changes Discord Notification
 
+# 워크플로우 실행 조건
 on:
   push:
     branches:
       - main
+      - develop
+    paths:
+      - '**/dto/**/*.java'
+      - '**/DTO/**/*.java'
+      - '**/*Dto.java'
+      - '**/*DTO.java'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - '**/dto/**/*.java'
+      - '**/DTO/**/*.java'
+      - '**/*Dto.java'
+      - '**/*DTO.java'
 
 jobs:
-  notify-dto:
+  notify-dto-changes:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 2  # 이전 커밋과 비교하기 위해 2개 커밋 가져오기
 
-      - name: Check commits for DTO file changes
-        id: check_dto
+      - name: Get changed DTO files
+        id: changed-files
         run: |
-          echo "Scanning commits in event payload..."
-          found=false
-          commit_msg=""
-          commit_id=""
-          # event JSON에는 commits 배열이 있음 (push 이벤트)
-          len=$(jq '.commits | length' "$GITHUB_EVENT_PATH")
-          for i in $(seq 0 $(($len - 1))); do
-            # added/modified arrays 합치기
-            added=$(jq -r ".commits[$i].added[]" "$GITHUB_EVENT_PATH" 2>/dev/null || true)
-            modified=$(jq -r ".commits[$i].modified[]" "$GITHUB_EVENT_PATH" 2>/dev/null || true)
-            files=$(printf "%s\n%s\n" "$added" "$modified" | sed '/^$/d' || true)
-
-            for f in $files; do
-              # DTO 패턴: 패키지에 dto가 포함되거나 파일명에 Dto가 붙은 경우
-              if echo "$f" | grep -E '(^|/)dto(/|$)|[A-Za-z0-9_]*Dto\.java$' >/dev/null; then
-                echo "DTO change detected: $f"
-                found=true
-                commit_msg=$(jq -r ".commits[$i].message" "$GITHUB_EVENT_PATH")
-                commit_id=$(jq -r ".commits[$i].id" "$GITHUB_EVENT_PATH")
-                break 2
-              fi
-            done
-          done
-
-          if [ "$found" = true ]; then
-            echo "found=true" >> $GITHUB_ENV
-            echo "commit_message=$commit_msg" >> $GITHUB_ENV
-            echo "commit_id=$commit_id" >> $GITHUB_ENV
+          # 변경된 DTO 파일들을 찾기
+          if [ "${{ github.event_name }}" = "push" ]; then
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep -E "(dto|DTO)" | grep "\.java$" || true)
+          else
+            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}..HEAD | grep -E "(dto|DTO)" | grep "\.java$" || true)
+          fi
+          
+          echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # 변경된 파일이 있는지 확인
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "file_count=$(echo "$CHANGED_FILES" | wc -l)" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "file_count=0" >> $GITHUB_OUTPUT
           fi
 
-      - name: Notify Discord (when DTO changed)
-        if: env.found == 'true'
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Get commit information
+        id: commit-info
+        if: steps.changed-files.outputs.has_changes == 'true'
         run: |
-          actor="${{ github.actor }}"
-          repo="${{ github.repository }}"
-          commit="${{ env.commit_id }}"
-          commit_msg="${{ env.commit_message }}"
-          commit_url="https://github.com/${repo}/commit/${commit}"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            COMMIT_SHA="${{ github.sha }}"
+            COMMIT_MSG=$(git log -1 --pretty=format:'%s')
+            COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an')
+            COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+            BRANCH_NAME="${{ github.ref_name }}"
+          else
+            COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
+            COMMIT_MSG="${{ github.event.pull_request.title }}"
+            COMMIT_AUTHOR="${{ github.event.pull_request.user.login }}"
+            COMMIT_URL="${{ github.event.pull_request.html_url }}"
+            BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          fi
+          
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "commit_author=$COMMIT_AUTHOR" >> $GITHUB_OUTPUT
+          echo "commit_url=$COMMIT_URL" >> $GITHUB_OUTPUT
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-          payload=$(jq -n --arg actor "$actor" \
-                          --arg repo "$repo" \
-                          --arg commit_msg "$commit_msg" \
-                          --arg commit_url "$commit_url" \
-                '{
-                  "embeds": [
-                    {
-                      "title": "DTO 파일 변경 감지",
-                      "description": "\($actor) 님이 DTO 관련 파일을 변경했습니다.\n\($commit_msg)\n[커밋 보기](\($commit_url))",
-                      "color": 3447003,
-                      "timestamp": now | todateiso8601
-                    }
-                  ]
-                }')
+      - name: Send Discord notification
+        if: steps.changed-files.outputs.has_changes == 'true'
+        run: |
+          # Discord 웹훅 URL (GitHub Secrets에 저장된 값 사용)
+          DISCORD_WEBHOOK_URL="${{ secrets.DISCORD_WEBHOOK_URL }}"
+          
+          # 변경된 파일 목록을 포맷팅
+          CHANGED_FILES="${{ steps.changed-files.outputs.changed_files }}"
+          FORMATTED_FILES=""
+          while IFS= read -r file; do
+            if [ -n "$file" ]; then
+              FORMATTED_FILES="$FORMATTED_FILES• \`$file\`\n"
+            fi
+          done <<< "$CHANGED_FILES"
+          
+          # 이벤트 타입에 따른 제목 설정
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TITLE="🚀 DTO 클래스 변경 감지 (Push)"
+            COLOR=3066993  # 초록색
+          else
+            TITLE="📝 DTO 클래스 변경 감지 (PR)"
+            COLOR=15844367  # 노란색
+          fi
+          
+          # Discord 메시지 JSON 생성
+          cat << EOF > discord_payload.json
+          {
+            "embeds": [
+              {
+                "title": "$TITLE",
+                "description": "Spring Boot DTO 클래스에 변경사항이 감지되었습니다.",
+                "color": $COLOR,
+                "fields": [
+                  {
+                    "name": "📁 Repository",
+                    "value": "[${{ github.repository }}](${{ github.server_url }}/${{ github.repository }})",
+                    "inline": true
+                  },
+                  {
+                    "name": "🌿 Branch",
+                    "value": "\`${{ steps.commit-info.outputs.branch_name }}\`",
+                    "inline": true
+                  },
+                  {
+                    "name": "👤 Author",
+                    "value": "${{ steps.commit-info.outputs.commit_author }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "💬 Commit Message",
+                    "value": "${{ steps.commit-info.outputs.commit_msg }}",
+                    "inline": false
+                  },
+                  {
+                    "name": "📄 Changed Files (${{ steps.changed-files.outputs.file_count }}개)",
+                    "value": "$FORMATTED_FILES",
+                    "inline": false
+                  },
+                  {
+                    "name": "🔗 View Changes",
+                    "value": "[Click here to view](${{ steps.commit-info.outputs.commit_url }})",
+                    "inline": false
+                  }
+                ],
+                "footer": {
+                  "text": "GitHub Actions • ${{ github.workflow }}",
+                  "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                },
+                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
+              }
+            ]
+          }
+          EOF
+          
+          # Discord 웹훅으로 메시지 전송
+          curl -H "Content-Type: application/json" \
+               -d @discord_payload.json \
+               "$DISCORD_WEBHOOK_URL"
+          
+          echo "Discord 알림이 성공적으로 전송되었습니다!"
 
-          curl -H "Content-Type: application/json" -X POST -d "$payload" "$DISCORD_WEBHOOK"
+      - name: Summary
+        if: steps.changed-files.outputs.has_changes == 'true'
+        run: |
+          echo "## 📊 DTO 변경 감지 결과" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **변경된 파일 수**: ${{ steps.changed-files.outputs.file_count }}개" >> $GITHUB_STEP_SUMMARY
+          echo "- **브랜치**: ${{ steps.commit-info.outputs.branch_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **커밋 작성자**: ${{ steps.commit-info.outputs.commit_author }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Discord 알림**: ✅ 전송 완료" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 변경된 파일 목록" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.changed-files.outputs.changed_files }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
