@@ -1,0 +1,79 @@
+# .github/workflows/notify-dto-changes.yml
+name: Notify DTO changes to Discord
+
+on:
+  push:
+    paths:
+      - 'src/main/java/**/dto/**'
+      - '**/*Dto.java'
+  pull_request:
+    paths:
+      - 'src/main/java/**/dto/**'
+      - '**/*Dto.java'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Determine changed files
+        id: files
+        run: |
+          # For push event use github.event.before / github.sha
+          BEFORE=${{ github.event.before }}
+          AFTER=${{ github.sha }}
+          # If pull_request event, use base/ head
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BEFORE=${{ github.event.pull_request.base.sha }}
+            AFTER=${{ github.event.pull_request.head.sha }}
+          fi
+          echo "Before: $BEFORE"
+          echo "After:  $AFTER"
+          git fetch --no-tags --prune --depth=50 origin $BEFORE $AFTER || true
+          CHANGED=$(git diff --name-only $BEFORE $AFTER || git diff --name-only $AFTER^ $AFTER)
+          echo "::debug::changed files: $CHANGED"
+          echo "changed-files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Filter DTO files
+        id: dto_check
+        run: |
+          CHANGED="${{ steps.files.outputs.changed-files }}"
+          echo "All changed files:"
+          echo "$CHANGED"
+          DTOS=$(echo "$CHANGED" | grep -E '(^|/)[^/]*Dto\.java$|/dto/' || true)
+          echo "dto-files<<EOF" >> $GITHUB_OUTPUT
+          echo "$DTOS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Send Discord notification (only if DTO changed)
+        if: ${{ steps.dto_check.outputs.dto-files != '' }}
+        run: |
+          WEBHOOK="${{ secrets.DISCORD_WEBHOOK_URL }}"
+          REPO="${{ github.repository }}"
+          ACTOR="${{ github.actor }}"
+          REF="${{ github.ref }}"
+          URL="https://github.com/${REPO}/commit/${{ github.sha }}"
+          FILES="${{ steps.dto_check.outputs.dto-files }}"
+
+          cat > payload.json <<'EOF'
+    "embeds": [
+      {
+        "title": "DTO 변경 감지",
+        "description": "Spring DTO 파일이 변경되었습니다.",
+        "fields": [
+          {"name": "Repository", "value": "'"${REPO}"'", "inline": true},
+          {"name": "Trigger", "value": "'"${{ github.event_name }}"'", "inline": true},
+          {"name": "Actor", "value": "'"${ACTOR}"'", "inline": true},
+          {"name": "Ref / Commit", "value": "'"${REF}"' / [view commit]("'"${URL}"'")", "inline": false},
+          {"name": "Changed DTO files", "value": "'"${FILES}"'", "inline": false}
+        ]
+      }
+    ]
+
+curl -H "Content-Type: application/json" -X POST -d @payload.json "$WEBHOOK"
