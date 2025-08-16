@@ -3,6 +3,8 @@ name: Notify DTO changes to Discord
 
 on:
   push:
+    branches:
+      - main  # 또는 'master', 'develop' 등 메인 브랜치 지정
     paths:
       - 'src/main/java/**/dto/**'
       - '**/*Dto.java'
@@ -14,69 +16,79 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          # Pull Request의 경우, base branch를 가져오기 위해 fetch-depth를 0으로 설정
+          fetch-depth: 0
 
       - name: Determine changed files
         id: files
         run: |
-          # For push event use github.event.before / github.sha
-          BEFORE=${{ github.event.before }}
-          AFTER=${{ github.sha }}
-          # If pull_request event, use base/ head
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BEFORE=${{ github.event.pull_request.base.sha }}
-            AFTER=${{ github.event.pull_request.head.sha }}
+            BEFORE="${{ github.event.pull_request.base.sha }}"
+            AFTER="${{ github.event.pull_request.head.sha }}"
+          else
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.sha }}"
           fi
+
           echo "Before: $BEFORE"
           echo "After:  $AFTER"
-          git fetch --no-tags --prune --depth=50 origin $BEFORE $AFTER || true
-          CHANGED=$(git diff --name-only $BEFORE $AFTER || git diff --name-only $AFTER^ $AFTER)
+
+          # git fetch를 통해 base와 head 커밋 정보를 모두 가져옵니다.
+          git fetch origin "$BEFORE" "$AFTER" || true
+
+          # 두 커밋 간의 변경된 파일 목록을 가져옵니다.
+          # 초기 커밋일 경우 `BEFORE`가 0으로 나올 수 있으므로 `..`을 사용합니다.
+          CHANGED=$(git diff --name-only $BEFORE..$AFTER || true)
+          
           echo "::debug::changed files: $CHANGED"
-          echo "changed-files<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGED" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "changed-files=${CHANGED}" >> "$GITHUB_OUTPUT"
 
       - name: Filter DTO files
         id: dto_check
         run: |
-          CHANGED="${{ steps.files.outputs.changed-files }}"
+          CHANGED_FILES="${{ steps.files.outputs.changed-files }}"
           echo "All changed files:"
-          echo "$CHANGED"
-          DTOS=$(echo "$CHANGED" | grep -E '(^|/)[^/]*Dto\.java$|/dto/' || true)
-          echo "dto-files<<EOF" >> $GITHUB_OUTPUT
-          echo "$DTOS" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES"
+          
+          # 변경된 파일 목록을 한 줄씩 필터링하여 DTO 파일만 추출
+          DTOS=$(echo "$CHANGED_FILES" | grep -E '(^|/)[^/]*Dto\.java$|/dto/' || true)
+          echo "::debug::found dto files: $DTOS"
+          echo "dto-files=${DTOS}" >> "$GITHUB_OUTPUT"
 
       - name: Send Discord notification (only if DTO changed)
         if: ${{ steps.dto_check.outputs.dto-files != '' }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          WEBHOOK="${{ secrets.DISCORD_WEBHOOK_URL }}"
+          WEBHOOK="$DISCORD_WEBHOOK_URL"
           REPO="${{ github.repository }}"
           ACTOR="${{ github.actor }}"
           REF="${{ github.ref }}"
           URL="https://github.com/${REPO}/commit/${{ github.sha }}"
-          FILES="${{ steps.dto_check.outputs.dto-files }}"
+          
+          # 띄어쓰기를 구분자로 변경하여 한 줄로 만듦
+          FILES_ONE_LINE=$(echo "${{ steps.dto_check.outputs.dto-files }}" | tr '\n' ' ')
 
-          cat > payload.json <<'EOF'
-  {
-    "embeds": [
-      {
-        "title": "DTO 변경 감지",
-        "description": "Spring DTO 파일이 변경되었습니다.",
-        "fields": [
-          {"name": "Repository", "value": "'"${REPO}"'", "inline": true},
-          {"name": "Trigger", "value": "'"${{ github.event_name }}"'", "inline": true},
-          {"name": "Actor", "value": "'"${ACTOR}"'", "inline": true},
-          {"name": "Ref / Commit", "value": "'"${REF}"' / [view commit]("'"${URL}"'")", "inline": false},
-          {"name": "Changed DTO files", "value": "'"${FILES}"'", "inline": false}
-        ]
-      }
-    ]
-  }
-  EOF
-
-curl -H "Content-Type: application/json" -X POST -d @payload.json "$WEBHOOK"
+          curl -H "Content-Type: application/json" -X POST --data-raw '
+            {
+              "embeds": [
+                {
+                  "title": "DTO 변경 감지",
+                  "description": "Spring DTO 파일이 변경되었습니다.",
+                  "color": 3447003,
+                  "fields": [
+                    {"name": "Repository", "value": "'"${REPO}"'", "inline": true},
+                    {"name": "Trigger", "value": "'"${{ github.event_name }}"'", "inline": true},
+                    {"name": "Actor", "value": "'"${ACTOR}"'", "inline": true},
+                    {"name": "Ref / Commit", "value": "'"${REF}"' / [view commit]('"${URL}"')", "inline": false},
+                    {"name": "Changed DTO files", "value": "```\n'"${FILES_ONE_LINE}"'\n```", "inline": false}
+                  ]
+                }
+              ]
+            }' "$WEBHOOK"
