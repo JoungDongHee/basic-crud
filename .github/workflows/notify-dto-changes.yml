@@ -62,6 +62,7 @@ jobs:
           FILES="${{ steps.dto_check.outputs.dto-files }}"
 
           cat > payload.json <<'EOF'
+  {
     "embeds": [
       {
         "title": "DTO 변경 감지",
@@ -75,5 +76,7 @@ jobs:
         ]
       }
     ]
+  }
+  EOF
 
 curl -H "Content-Type: application/json" -X POST -d @payload.json "$WEBHOOK"
