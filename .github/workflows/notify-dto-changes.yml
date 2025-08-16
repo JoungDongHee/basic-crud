@@ -86,10 +86,10 @@ jobs:
           
           # 이벤트 타입에 따른 제목 설정
           if [ "${{ github.event_name }}" = "push" ]; then
-            TITLE="🚀 DTO 클래스 변경 감지 (Push)"
+            TITLE="API 스펙 변경 감지 (Push)"
             COLOR=3066993  # 초록색
           else
-            TITLE="📝 DTO 클래스 변경 감지 (PR)"
+            TITLE="API 스펙 변경 감지 (Pull Request)"
             COLOR=15844367  # 노란색
           fi
           
